@@ -1,5 +1,7 @@
 # Assignment
 
+> Please fork this repository and create a pull request for review.
+
 ## Introduction
 We need to track the current weather details about the city we are currently living in.
 
@@ -27,5 +29,3 @@ The local data can be deleted at users' requests.
 
 ### Brownie Point
 Run the application in [Minikube](https://minikube.sigs.k8s.io/docs/start/) or MicroK8s(https://microk8s.io/)
-
-> Please fork this repository and create a pull request for review.
