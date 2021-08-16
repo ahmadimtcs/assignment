@@ -1,4 +1,4 @@
-# assignment
+# Assignment
 
 ## Introduction
 We need to track the current weather details about the city we are currently living in.
