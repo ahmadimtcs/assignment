@@ -4,7 +4,7 @@
 We need to track the current weather details about the city we are currently living in.
 
 ## Problem Statement 
-Please write a program that will call [OpenWeather API](https://openweathermap.org/) and display the current weather. For application performance (caching) reasons we need to avoid the call to the OpenWeather API. Store the data for N min locally and make the call only when the time has expired and refresh the local data.
+Please write a program that will call [OpenWeather API](https://openweathermap.org/) and display the current weather. For application performance (caching) reasons we need to avoid multiple calls to the OpenWeather API. Store the data for N min locally and make the call only when the time has expired and refresh the local data.
 
 The local data can be deleted at users' requests.
 
