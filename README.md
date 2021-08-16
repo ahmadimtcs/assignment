@@ -28,4 +28,4 @@ The local data can be deleted at users' requests.
 * Dockerize the application and run it
 
 ### Brownie Point
-Run the application in [Minikube](https://minikube.sigs.k8s.io/docs/start/) or MicroK8s(https://microk8s.io/)
+Run the application in [Minikube](https://minikube.sigs.k8s.io/docs/start/) or[MicroK8s](https://microk8s.io/)
