@@ -17,7 +17,7 @@ The local data can be deleted at users' requests.
 * Expose API to see weather for specific city
 * Design and implement weather-data cache accordingly 
 * Use Reactive Spring.
-* Logging, exception handling, returning proper HTTP error codes
+* Follow the best practices for logging, exception handling.
 * Integrate swagger in your application and follow the REST standard.
 * Code coverage and branch ratio coverage should be more than 90%(the more the merrier).
 * Use Java 8 features (Functional constructs like Lambda, Stream) as much as you can.
