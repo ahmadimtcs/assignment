@@ -20,7 +20,7 @@ The local data can be deleted at users' requests.
 * Follow the best practices for logging, exception handling.
 * Integrate swagger in your application and follow the REST standard.
 * Code coverage and branch ratio coverage should be more than 90%(the more the merrier).
-* Use Java 8 features (Functional constructs like Lambda, Stream) as much as you can.
+* Use Java 8 features (Functional constructs like Lambda, Stream etc.) as much as you can.
 * The code should be properly formatted. Please use Google code formatting for Java (more details [here](https://github.com/HPI-Information-Systems/Metanome/wiki/Installing-the-google-styleguide-settings-in-intellij-and-eclipse)).
 * Use Gradle as build tool
 
