@@ -1,0 +1,25 @@
+version: "3.8"
+
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mymongodb
+    ports:
+      - 27017:27017
+    networks:
+      - my-app-network
+  weather-app-image:
+    image: guf12345/weather-app-image
+    container_name: weather-app-image
+    ports:
+      - 8081:8081
+    environment:
+      WAIT_HOSTS: mymongodb:27017
+    depends_on:
+      - mongodb
+    networks:
+      - my-app-network
+networks:
+  my-app-network:
+    driver: bridge
