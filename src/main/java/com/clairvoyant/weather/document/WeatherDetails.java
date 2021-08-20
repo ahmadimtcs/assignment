@@ -14,9 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
  */
 @Document
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class WeatherDetails {
 
   @Id

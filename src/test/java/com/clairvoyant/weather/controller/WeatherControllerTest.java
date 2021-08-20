@@ -3,6 +3,7 @@ package com.clairvoyant.weather.controller;
 import static com.clairvoyant.weather.contants.WeatherConstants.WEATHER_END_POINT;
 
 import com.clairvoyant.weather.document.WeatherDetails;
+import com.clairvoyant.weather.exception.NotFoundException;
 import com.clairvoyant.weather.repository.WeatherRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +30,7 @@ import reactor.core.publisher.Mono;
 class WeatherControllerTest {
 
   @Autowired
-  WebTestClient webTestClient;
+  private WebTestClient webTestClient;
 
   @MockBean
   private WeatherRepository weatherRepository;
@@ -37,12 +38,13 @@ class WeatherControllerTest {
   @Test
   @WithMockUser(roles = "ADMIN")
   void getAllWeatherDetails() {
+    WeatherDetails weatherDetails = new WeatherDetails();
+    weatherDetails.setId(null);
+    weatherDetails.setName("Mumbai");
+    weatherDetails.setTemp(299.12);
+    weatherDetails.setFeels_like(300.12);
     Mockito.when(weatherRepository.findAll())
-        .thenReturn(Flux.just(WeatherDetails
-            .builder()
-            .name("Mumbai")
-            .build()
-        ));
+        .thenReturn(Flux.just(weatherDetails));
     webTestClient.get().uri(WEATHER_END_POINT)
         .exchange()
         .expectStatus()
@@ -54,13 +56,11 @@ class WeatherControllerTest {
   @Test
   @WithMockUser(roles = "ADMIN")
   void createWeatherDetails() {
-    WeatherDetails weatherDetails = WeatherDetails
-        .builder()
-        .id(null)
-        .name("Mumbai")
-        .temp(299.12)
-        .feels_like(300.12)
-        .build();
+    WeatherDetails weatherDetails = new WeatherDetails();
+    weatherDetails.setId(null);
+    weatherDetails.setName("Mumbai");
+    weatherDetails.setTemp(299.12);
+    weatherDetails.setFeels_like(300.12);
 
     Mockito.when(weatherRepository.save(weatherDetails))
         .thenReturn(Mono.just(weatherDetails));
@@ -75,18 +75,16 @@ class WeatherControllerTest {
   @Test
   @WithMockUser(roles = "ADMIN")
   void updateWeather() {
-    WeatherDetails weatherDetails = WeatherDetails
-        .builder()
-        .id(8131499L)
-        .name("Mumbai")
-        .temp(299.12)
-        .feels_like(300.12)
-        .build();
+    WeatherDetails weatherDetails = new WeatherDetails();
+    weatherDetails.setId(8131499L);
+    weatherDetails.setName("Mumbai");
+    weatherDetails.setTemp(299.12);
+    weatherDetails.setFeels_like(300.12);
     Mockito.when(weatherRepository.findById(8131499L))
         .thenReturn(Mono.just(weatherDetails));
     Mockito.when(weatherRepository.save(weatherDetails))
         .thenReturn(Mono.just(weatherDetails));
-    webTestClient.put().uri(WEATHER_END_POINT)
+    webTestClient.put().uri(WEATHER_END_POINT.concat("/{id}"), 8131499L)
         .bodyValue(weatherDetails)
         .exchange()
         .expectStatus()
@@ -98,18 +96,28 @@ class WeatherControllerTest {
   @Test
   @WithMockUser(roles = "ADMIN")
   void getWeatherDetailsByCity() {
+    WeatherDetails weatherDetails = new WeatherDetails();
+    weatherDetails.setId(123L);
+    weatherDetails.setName("Mumbai");
+    weatherDetails.setTemp(299.12);
+    weatherDetails.setFeels_like(300.12);
     Mockito.when(weatherRepository.findByName("Mumbai"))
-        .thenReturn(Mono.just(WeatherDetails
-            .builder()
-            .name("Mumbai")
-            .build()
-        ));
+        .thenReturn(Mono.just(weatherDetails));
     webTestClient.get().uri(WEATHER_END_POINT.concat("/city/{city}"), "Mumbai")
         .exchange()
         .expectStatus().isOk()
         .expectBody()
         .jsonPath("$.name").isEqualTo("Mumbai");
 
+  }
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  public void getCityNotFoundException() {
+    Mockito.when(weatherRepository.findByName("Mumbai"))
+        .thenReturn(Mono.error(new NotFoundException("NotFoundException error message!")));
+    webTestClient.get().uri(WEATHER_END_POINT.concat("/city/{city}"), "Mumbai")
+        .exchange()
+        .expectStatus().isNotFound();
   }
 
   @Test
@@ -124,5 +132,6 @@ class WeatherControllerTest {
         .expectStatus().isOk()
         .expectBody(Void.class);
   }
+
 
 }

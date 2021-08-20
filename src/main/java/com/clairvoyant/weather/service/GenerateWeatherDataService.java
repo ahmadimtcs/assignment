@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.scheduler.Schedulers;
 
@@ -19,7 +20,7 @@ import reactor.core.scheduler.Schedulers;
  * @version 1.0
  * @date 19-08-2021 15:27
  */
-@Component
+@Service
 public class GenerateWeatherDataService {
 
   @Autowired
@@ -27,6 +28,12 @@ public class GenerateWeatherDataService {
 
   @Value("${weather.api.id}")
   private String apiId;
+
+  @Value("${weather.api.lon}")
+  private String lon;
+
+  @Value("${weather.api.lat}")
+  private String lat;
 
   WebClient webClient = WebClient.create(OPEN_WEATHER_COMMON_URL);
   Instant start = Instant.now();
@@ -45,7 +52,7 @@ public class GenerateWeatherDataService {
   public void refreshData() {
 
     webClient.get().
-        uri("/find?lat=19.076090&lon=72.877426&cnt=10&appid=" + apiId).
+        uri("/find?lat="+lat+"&lon="+lon+"&cnt=10&appid=" + apiId).
         retrieve().bodyToMono(String.class).subscribe(v -> {
       JSONObject jsonObject = new JSONObject(v);
       if (jsonObject.getString("cod").equals("200")) {

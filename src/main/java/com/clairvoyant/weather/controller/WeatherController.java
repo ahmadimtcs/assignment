@@ -2,11 +2,9 @@ package com.clairvoyant.weather.controller;
 
 import static com.clairvoyant.weather.contants.WeatherConstants.WEATHER_END_POINT;
 
-import com.clairvoyant.weather.document.WeatherDetails;
 import com.clairvoyant.weather.dto.WeatherDto;
 import com.clairvoyant.weather.exception.NotFoundException;
-import com.clairvoyant.weather.repository.WeatherRepository;
-import com.clairvoyant.weather.service.GenerateWeatherDataService;
+import com.clairvoyant.weather.service.WeatherService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,74 +29,65 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class WeatherController {
 
-  @Autowired
-  WeatherRepository weatherRepository;
+  private final WeatherService weatherService;
 
   @Autowired
-  GenerateWeatherDataService generateWeatherDataService;
+  public WeatherController(WeatherService weatherService) {
+    super();
+    this.weatherService = weatherService;
+  }
+
 
   /**
-   * Created By Gufran Khan | 17-May-2021  |Get All Weather Details
+   * 17-May-2021  |Get All Weather Details
    */
   @GetMapping(WEATHER_END_POINT)
-  public Flux<WeatherDetails> getAllWeatherDetails() {
+  public Flux<WeatherDto> getAllWeatherDetails() {
     log.info("Inside Class WeatherController Method getAllWeatherDetails");
-    generateWeatherDataService.refreshAfterTime();
-    return weatherRepository.findAll();
+    return weatherService.findAll();
   }
 
-
   /**
-   * Created By Gufran Khan | 17-May-2021  |Create Weather Detail
+   * 17-May-2021  |Create Weather Detail
    */
   @PostMapping(WEATHER_END_POINT)
-  public Mono<WeatherDetails> createWeatherDetails(
-      @RequestBody Mono<WeatherDetails> weatherDetails) {
+  public Mono<WeatherDto> createWeatherDetails(
+      @RequestBody Mono<WeatherDto> weatherDto) {
     log.info("Inside Class WeatherController Method createWeatherDetails");
-    generateWeatherDataService.refreshAfterTime();
-    return weatherDetails.flatMap(result ->
-        weatherRepository.save(result)
-    );
+    return weatherService.createWeatherDetails(weatherDto);
   }
 
   /**
-   * Created By Gufran Khan | 17-May-2021  |Update Book Detail By Id
+   * 17-May-2021  |Update Weather Detail By Id
    */
-  @PutMapping(WEATHER_END_POINT)
-  public Mono<ResponseEntity<WeatherDetails>> updateWeather(
-      @RequestBody WeatherDto weatherDetail) {
+  @PutMapping(WEATHER_END_POINT + "/{id}")
+  public Mono<ResponseEntity<WeatherDto>> updateWeatherDetails(@PathVariable("id") Long id,
+      @RequestBody Mono<WeatherDto> weatherDto) {
 
     log.info("Inside Class WeatherController Method updateWeather");
-    generateWeatherDataService.refreshAfterTime();
-    return weatherRepository.findById(weatherDetail.getId())
-        .flatMap(result -> {
-          result.setName(weatherDetail.getName());
-          return weatherRepository.save(result);
-        })
+    return weatherService.updateWeatherDetails(id, weatherDto)
         .map(updatedItem -> new ResponseEntity<>(updatedItem, HttpStatus.OK))
         .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
   }
 
   /**
-   * Created By Gufran Khan | 17-May-2021  |Get Book Detail By City Name
+   * 17-May-2021  |Get Weather Detail By City Name
    */
   @GetMapping(WEATHER_END_POINT + "/city/{city}")
-  public Mono<ResponseEntity<WeatherDetails>> getWeatherDetailsByCity(@PathVariable String city) {
+  public Mono<ResponseEntity<WeatherDto>> getWeatherDetailsByCity(@PathVariable String city) {
     log.info("Inside Class WeatherController Method getWeatherDetailsByCity");
-    generateWeatherDataService.refreshAfterTime();
-    return weatherRepository.findByName(city)
+    return weatherService.getWeatherDetailsByCity(city)
         .map(res -> new ResponseEntity<>(res, HttpStatus.OK))
         .switchIfEmpty(Mono.error(new NotFoundException("NotFoundException  message!")));
   }
 
   /**
-   * Created By Gufran Khan | 17-May-2021  |Delete Weather Detail By Id
+   * 17-May-2021  |Delete Weather Detail By Id
    */
   @DeleteMapping(WEATHER_END_POINT + "/{id}")
   public Mono<Void> deleteWeatherDetails(@PathVariable Long id) {
     log.info("Inside Class WeatherController Method deleteWeatherDetails");
-    generateWeatherDataService.refreshAfterTime();
-    return weatherRepository.deleteById(id);
+    return weatherService.deleteWeatherDetailsById(id);
   }
 
 
