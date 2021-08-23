@@ -15,6 +15,7 @@ The local data can be deleted at users' requests.
 * Accept list of cities to be monitored.
 * Use a simple noSQL DB for storing city data. Expose CRUD operation for the same.
 * Expose API to see weather for specific city
+* Instead of using `@RestConstroller` use `RouterFunction` to create controller.
 * Design and implement weather-data cache accordingly 
 * Use Reactive Spring.
 * Follow the best practices for logging, exception handling.
@@ -22,7 +23,9 @@ The local data can be deleted at users' requests.
 * Code coverage and branch ratio coverage should be more than 90%(the more the merrier).
 * Use Java 8 features (Functional constructs like Lambda, Stream etc.) as much as you can.
 * The code should be properly formatted. Please use Google code formatting for Java (more details [here](https://github.com/HPI-Information-Systems/Metanome/wiki/Installing-the-google-styleguide-settings-in-intellij-and-eclipse)).
-* Use Gradle as build tool
+* Use Gradle as build tool.
+* Add Spotless gradle plugin for formatting Java code.
+* 
 
 ## Build and Deployment
 * Dockerize the application and run it
