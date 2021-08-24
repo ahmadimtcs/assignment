@@ -1,0 +1,68 @@
+Api for RestController Method
+1)GET All Weather Details
+  Method:GET
+  localhost:8081/api/weather
+2)Save WeatherDetails
+  Method:POST
+  localhost:8081/api/weather
+  Body:
+  {
+          "id": 7279599,
+          "name": "Airoli",
+          "temp": 301.16,
+          "feels_like": 306.75
+   }
+3)Update Weather By ID
+  Method:PUT
+  localhost:8081/api/weather/7279599
+  Body:
+    {
+            "id": 7279599,
+            "name": "Mumbai",
+            "temp": 310.16,
+            "feels_like": 316.75
+     }
+4)GET by City Name
+  Method:GET
+  localhost:8081/api/weather/city/Mumbai
+5)DELETE By ID
+  Method:DELETE
+  localhost:8081/api/weather/7279599
+----------------------------------------------------------------------------------------------
+Api for Functional Style Method
+1)GET All Weather Details
+  Method:GET
+  localhost:8081/api/functional/weather
+2)Save WeatherDetails
+  Method:POST
+  localhost:8081/api/weather
+  Body:
+  {
+          "id": 7279599,
+          "name": "Airoli",
+          "temp": 301.16,
+          "feels_like": 306.75
+   }
+3)Update Weather By ID
+  Method:PUT
+  localhost:8081/api/functional/weather/7279599
+  Body:
+    {
+            "id": 7279599,
+            "name": "Mumbai",
+            "temp": 310.16,
+            "feels_like": 316.75
+     }
+4)GET by City Name
+  Method:GET
+  localhost:8081/api/functional/weather/city/Mumbai
+5)DELETE By ID
+  Method:DELETE
+  localhost:8081/api/functional/weather/7279599
+
+ ----------------------------------------------------------------------------------------------
+
+
+
+Note:1)Port need to be changes as per active profile
+     2)To Perform Delete operation.Provide admin as user name and password in basic Authentication

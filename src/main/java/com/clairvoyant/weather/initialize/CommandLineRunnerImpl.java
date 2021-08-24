@@ -23,6 +23,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
 
     generateWeatherDataService.refreshData();
   }
+
   @Bean
   public ModelMapper modelMapper() {
     return new ModelMapper();
