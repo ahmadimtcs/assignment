@@ -1,8 +1,5 @@
 package com.clairvoyant.weather.dto;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,12 +12,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@EqualsAndHashCode
 @NoArgsConstructor
 public class WeatherDto {
 
   private Long id;
   private String name;
   private Double temp;
-  private Double feels_like;
+  private Double feelsLike;
 }

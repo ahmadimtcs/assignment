@@ -25,19 +25,19 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 @Slf4j
 public class WeatherRouter {
 
-  @Bean
-  public RouterFunction<ServerResponse> weatherRoute(WeatherHandler weatherHandler) {
+	@Bean
+	public RouterFunction<ServerResponse> weatherRoute(WeatherHandler weatherHandler) {
 
-    return RouterFunctions
-        .route(GET(WEATHER_FUNCTIONAL_END_POINT).and(accept(APPLICATION_JSON))
-            , weatherHandler::getAllWeatherDetails)
-        .andRoute(POST(WEATHER_FUNCTIONAL_END_POINT).and(accept(APPLICATION_JSON))
-            , weatherHandler::createWeatherDetails)
-        .andRoute(PUT(WEATHER_FUNCTIONAL_END_POINT + "/{id}").and(accept(APPLICATION_JSON))
-            , weatherHandler::updateWeatherDetails)
-        .andRoute(DELETE(WEATHER_FUNCTIONAL_END_POINT + "/{id}").and(accept(APPLICATION_JSON))
-            , weatherHandler::deleteWeatherDetailsById)
-        .andRoute(GET(WEATHER_FUNCTIONAL_END_POINT + "/city/{city}").and(accept(APPLICATION_JSON))
-            , weatherHandler::getWeatherDetailsByCity);
-  }
+		return RouterFunctions
+				.route(GET(WEATHER_FUNCTIONAL_END_POINT).and(accept(APPLICATION_JSON)),
+						weatherHandler::getAllWeatherDetails)
+				.andRoute(POST(WEATHER_FUNCTIONAL_END_POINT).and(accept(APPLICATION_JSON)),
+						weatherHandler::createWeatherDetails)
+				.andRoute(PUT(WEATHER_FUNCTIONAL_END_POINT + "/{id}").and(accept(APPLICATION_JSON)),
+						weatherHandler::updateWeatherDetails)
+				.andRoute(DELETE(WEATHER_FUNCTIONAL_END_POINT + "/{id}").and(accept(APPLICATION_JSON)),
+						weatherHandler::deleteWeatherDetailsById)
+				.andRoute(GET(WEATHER_FUNCTIONAL_END_POINT + "/city/{city}").and(accept(APPLICATION_JSON)),
+						weatherHandler::getWeatherDetailsByCity);
+	}
 }

@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @Slf4j
 public class WeatherExceptionHandler {
 
-  @ExceptionHandler(NotFoundException.class)
-  public ResponseEntity<String> notFoundException(NotFoundException ex) {
-    log.error("Exception caught in notFoundException :  {0} ", ex);
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-  }
+	@ExceptionHandler(NotFoundException.class)
+	public ResponseEntity<String> notFoundException(NotFoundException ex) {
+		log.error("Exception caught in notFoundException :  {0} ", ex);
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+	}
 }

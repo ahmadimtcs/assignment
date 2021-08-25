@@ -29,67 +29,62 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class WeatherController {
 
-  private final WeatherService weatherService;
+	private final WeatherService weatherService;
 
-  @Autowired
-  public WeatherController(WeatherService weatherService) {
-    super();
-    this.weatherService = weatherService;
-  }
+	@Autowired
+	public WeatherController(WeatherService weatherService) {
+		super();
+		this.weatherService = weatherService;
+	}
 
+	/**
+	 * 17-May-2021 |Get All Weather Details
+	 */
+	@GetMapping(WEATHER_END_POINT)
+	public Flux<WeatherDto> getAllWeatherDetails() {
+		log.info("Inside Class WeatherController Method getAllWeatherDetails");
+		return weatherService.findAll();
+	}
 
-  /**
-   * 17-May-2021  |Get All Weather Details
-   */
-  @GetMapping(WEATHER_END_POINT)
-  public Flux<WeatherDto> getAllWeatherDetails() {
-    log.info("Inside Class WeatherController Method getAllWeatherDetails");
-    return weatherService.findAll();
-  }
+	/**
+	 * 17-May-2021 |Create Weather Detail
+	 */
+	@PostMapping(WEATHER_END_POINT)
+	public Mono<WeatherDto> createWeatherDetails(@RequestBody Mono<WeatherDto> weatherDto) {
+		log.info("Inside Class WeatherController Method createWeatherDetails");
+		return weatherService.createWeatherDetails(weatherDto);
+	}
 
-  /**
-   * 17-May-2021  |Create Weather Detail
-   */
-  @PostMapping(WEATHER_END_POINT)
-  public Mono<WeatherDto> createWeatherDetails(
-      @RequestBody Mono<WeatherDto> weatherDto) {
-    log.info("Inside Class WeatherController Method createWeatherDetails");
-    return weatherService.createWeatherDetails(weatherDto);
-  }
+	/**
+	 * 17-May-2021 |Update Weather Detail By Id
+	 */
+	@PutMapping(WEATHER_END_POINT + "/{id}")
+	public Mono<ResponseEntity<WeatherDto>> updateWeatherDetails(@PathVariable("id") Long id,
+			@RequestBody Mono<WeatherDto> weatherDto) {
 
-  /**
-   * 17-May-2021  |Update Weather Detail By Id
-   */
-  @PutMapping(WEATHER_END_POINT + "/{id}")
-  public Mono<ResponseEntity<WeatherDto>> updateWeatherDetails(@PathVariable("id") Long id,
-      @RequestBody Mono<WeatherDto> weatherDto) {
+		log.info("Inside Class WeatherController Method updateWeather");
+		return weatherService.updateWeatherDetails(id, weatherDto)
+				.map(updatedItem -> new ResponseEntity<>(updatedItem, HttpStatus.OK))
+				.defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+	}
 
-    log.info("Inside Class WeatherController Method updateWeather");
-    return weatherService.updateWeatherDetails(id, weatherDto)
-        .map(updatedItem -> new ResponseEntity<>(updatedItem, HttpStatus.OK))
-        .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-  }
+	/**
+	 * 17-May-2021 |Get Weather Detail By City Name
+	 */
+	@GetMapping(WEATHER_END_POINT + "/city/{city}")
+	public Mono<ResponseEntity<WeatherDto>> getWeatherDetailsByCity(@PathVariable String city) {
+		log.info("Inside Class WeatherController Method getWeatherDetailsByCity");
+		return weatherService.getWeatherDetailsByCity(city).map(res -> new ResponseEntity<>(res, HttpStatus.OK))
+				.switchIfEmpty(Mono.error(new NotFoundException("NotFoundException  message!")));
+	}
 
-  /**
-   * 17-May-2021  |Get Weather Detail By City Name
-   */
-  @GetMapping(WEATHER_END_POINT + "/city/{city}")
-  public Mono<ResponseEntity<WeatherDto>> getWeatherDetailsByCity(@PathVariable String city) {
-    log.info("Inside Class WeatherController Method getWeatherDetailsByCity");
-    return weatherService.getWeatherDetailsByCity(city)
-        .map(res -> new ResponseEntity<>(res, HttpStatus.OK))
-        .switchIfEmpty(Mono.error(new NotFoundException("NotFoundException  message!")));
-  }
-
-  /**
-   * 17-May-2021  |Delete Weather Detail By Id
-   */
-  @DeleteMapping(WEATHER_END_POINT + "/{id}")
-  public Mono<Void> deleteWeatherDetails(@PathVariable Long id) {
-    log.info("Inside Class WeatherController Method deleteWeatherDetails");
-    return weatherService.deleteWeatherDetailsById(id);
-  }
-
+	/**
+	 * 17-May-2021 |Delete Weather Detail By Id
+	 */
+	@DeleteMapping(WEATHER_END_POINT + "/{id}")
+	public Mono<Void> deleteWeatherDetails(@PathVariable Long id) {
+		log.info("Inside Class WeatherController Method deleteWeatherDetails");
+		return weatherService.deleteWeatherDetailsById(id);
+	}
 
 }
-

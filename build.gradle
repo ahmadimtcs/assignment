@@ -26,13 +26,15 @@ docker {
 	copySpec.into("build/libs")
 }
 spotless {
-	java {
-		importOrder()
-		removeUnusedImports()
-		googleJavaFormat()
-		eclipse()
-		prettier()
-		licenseHeader '/* (C) $YEAR */'
+	spotless {
+		java {
+			eclipse()
+			target project.fileTree(project.rootDir) {
+				include '**/*.java'
+				exclude '**/build/**'
+			}
+			enforceCheck true
+		}
 	}
 }
 dependencies {

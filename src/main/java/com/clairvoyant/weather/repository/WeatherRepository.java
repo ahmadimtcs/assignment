@@ -11,5 +11,5 @@ import reactor.core.publisher.Mono;
  */
 public interface WeatherRepository extends ReactiveMongoRepository<WeatherDetails, Long> {
 
-  Mono<WeatherDetails> findByName(String city);
+	Mono<WeatherDetails> findByName(String city);
 }

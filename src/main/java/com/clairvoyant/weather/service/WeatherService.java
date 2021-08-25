@@ -13,13 +13,13 @@ import reactor.core.publisher.Mono;
 @Service
 public interface WeatherService {
 
-  Flux<WeatherDto> findAll();
+	Flux<WeatherDto> findAll();
 
-  Mono<WeatherDto> createWeatherDetails(Mono<WeatherDto> weatherDto);
+	Mono<WeatherDto> createWeatherDetails(Mono<WeatherDto> weatherDto);
 
-  Mono<WeatherDto> updateWeatherDetails(Long id, Mono<WeatherDto> weatherDto);
+	Mono<WeatherDto> updateWeatherDetails(Long id, Mono<WeatherDto> weatherDto);
 
-  Mono<WeatherDto> getWeatherDetailsByCity(String city);
+	Mono<WeatherDto> getWeatherDetailsByCity(String city);
 
-  Mono<Void> deleteWeatherDetailsById(Long id);
+	Mono<Void> deleteWeatherDetailsById(Long id);
 }
