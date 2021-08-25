@@ -14,8 +14,6 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableWebFluxSecurity
 public class SpringWebFluxSecurityConfig {
 
-
-
 	@Bean
 	SecurityWebFilterChain filterChain(ServerHttpSecurity httpSecurity) {
 		httpSecurity.authorizeExchange().pathMatchers(HttpMethod.GET, "/api/**").permitAll()
