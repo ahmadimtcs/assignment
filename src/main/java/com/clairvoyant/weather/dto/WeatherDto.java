@@ -2,7 +2,10 @@ package com.clairvoyant.weather.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * @author Gufran Khan
@@ -10,7 +13,9 @@ import lombok.NoArgsConstructor;
  * @date 17-08-2021 16:20
  */
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
 @NoArgsConstructor
 public class WeatherDto {
 

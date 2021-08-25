@@ -23,7 +23,7 @@ public class WeatherServiceImpl implements WeatherService {
 
   private final WeatherRepository weatherRepository;
   private final ModelMapper modelMapper;
-  GenerateWeatherDataService generateWeatherDataService;
+  private final GenerateWeatherDataService generateWeatherDataService;
 
   @Autowired
   public WeatherServiceImpl(WeatherRepository weatherRepository, ModelMapper modelMapper,

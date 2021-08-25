@@ -28,6 +28,9 @@ public class WeatherHandler {
     this.weatherService = weatherService;
   }
 
+  /**
+   * 25-May-2021  |Get All Weather Details
+   */
   public Mono<ServerResponse> getAllWeatherDetails(ServerRequest serverRequest) {
     log.info("Inside Class WeatherHandler Method getAllWeatherDetails");
     Flux<WeatherDto> weatherDetails = weatherService.findAll();
@@ -36,7 +39,9 @@ public class WeatherHandler {
         .body(weatherDetails, WeatherDto.class)
         .switchIfEmpty(ServerResponse.notFound().build());
   }
-
+  /**
+   * 25-May-2021  |Create Weather Detail
+   */
   public Mono<ServerResponse> createWeatherDetails(ServerRequest serverRequest) {
     log.info("Inside Class WeatherHandler Method createWeatherDetails");
     Mono<WeatherDto> weatherDto = serverRequest.bodyToMono(WeatherDto.class);
@@ -46,7 +51,9 @@ public class WeatherHandler {
         .switchIfEmpty(ServerResponse.notFound().build());
 
   }
-
+  /**
+   * 25-May-2021  |Update Weather Detail By Id
+   */
   public Mono<ServerResponse> updateWeatherDetails(ServerRequest serverRequest) {
     log.info("Inside Class WeatherHandler Method updateWeatherDetails");
     String id = serverRequest.pathVariable("id");
@@ -59,7 +66,9 @@ public class WeatherHandler {
             .switchIfEmpty(ServerResponse.notFound().build());
   }
 
-
+  /**
+   * 25-May-2021  | Weather Detail By City Name
+   */
   public Mono<ServerResponse> getWeatherDetailsByCity(ServerRequest serverRequest) {
     log.info("Inside Class WeatherHandler Method getWeatherDetailsByCity");
     String city = serverRequest.pathVariable("city");
@@ -68,7 +77,9 @@ public class WeatherHandler {
         .body(weatherService.getWeatherDetailsByCity(city), WeatherDto.class)
         .switchIfEmpty(ServerResponse.notFound().build());
   }
-
+  /**
+   * 25-May-2021  |Delete Weather Detail By Id
+   */
   public Mono<ServerResponse> deleteWeatherDetailsById(ServerRequest serverRequest) {
     log.info("Inside Class WeatherHandler Method deleteWeatherDetailsById");
     String id = serverRequest.pathVariable("id");

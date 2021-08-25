@@ -3,7 +3,11 @@ package com.clairvoyant.weather.document;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -13,7 +17,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * @date 17-08-2021 16:20
  */
 @Document
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
 @NoArgsConstructor
 public class WeatherDetails {
 

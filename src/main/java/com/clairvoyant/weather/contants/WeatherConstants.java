@@ -9,5 +9,5 @@ public class WeatherConstants {
 
   public static final String WEATHER_END_POINT = "/api/weather";
   public static final String WEATHER_FUNCTIONAL_END_POINT = "/api/functional/weather";
-  public static final String OPEN_WEATHER_COMMON_URL = "https://api.openweathermap.org/data/2.5";
+  public static final String OPEN_WEATHER_BASE_URL = "https://api.openweathermap.org/data/2.5";
 }
