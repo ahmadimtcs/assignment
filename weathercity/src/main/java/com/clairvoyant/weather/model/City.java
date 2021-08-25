@@ -20,7 +20,6 @@ public class City {
   private Double feels_like;
 
 
-
   public City(String name, double temp, double feels_like, double temp_min, double temp_max, double pressure) {
 
     this.name = name;
