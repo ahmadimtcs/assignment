@@ -2,6 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '2.5.4'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
+	id "com.diffplug.gradle.spotless" version "4.5.1"
 }
 
 group = 'com.weather.assignment'
@@ -18,15 +19,31 @@ repositories {
 	mavenCentral()
 }
 
+spotless {
+	spotless {
+		java {
+			eclipse()
+			target project.fileTree(project.rootDir) {
+				include '**/*.java'
+				exclude '**/build/**'
+			}
+			enforceCheck true
+		}
+	}
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.json:json:20210307'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'junit:junit:4.12'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
 }
+
 
 test {
 	useJUnitPlatform()
