@@ -19,23 +19,26 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableWebFluxSecurity
 public class SpringWebFluxSecurityConfig {
 
-	@Bean
-	public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+  @Bean
+  public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 
-		http.csrf().disable().authorizeExchange().pathMatchers(HttpMethod.GET, "/api/**").permitAll()
-				.pathMatchers(HttpMethod.DELETE).hasRole("ADMIN").anyExchange().authenticated().and().httpBasic().and()
-				.formLogin();
-		return http.build();
-	}
+    http.csrf().disable().authorizeExchange().pathMatchers(HttpMethod.GET, "/api/**").permitAll()
+        .pathMatchers(HttpMethod.DELETE).hasRole("ADMIN").anyExchange().authenticated().and()
+        .httpBasic().and()
+        .formLogin();
+    return http.build();
+  }
 
-	@Bean
-	public MapReactiveUserDetailsService userDetailsService() {
+  @Bean
+  public MapReactiveUserDetailsService userDetailsService() {
 
-		PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-		UserDetails user1 = User.withUsername("user").password(encoder.encode("user")).roles("USER").build();
-		UserDetails user2 = User.withUsername("admin").password(encoder.encode("admin")).roles("ADMIN").build();
+    PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    UserDetails user1 = User.withUsername("user").password(encoder.encode("user")).roles("USER")
+        .build();
+    UserDetails user2 = User.withUsername("admin").password(encoder.encode("admin")).roles("ADMIN")
+        .build();
 
-		return new MapReactiveUserDetailsService(user1, user2);
-	}
+    return new MapReactiveUserDetailsService(user1, user2);
+  }
 
 }

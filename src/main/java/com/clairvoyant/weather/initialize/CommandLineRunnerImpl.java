@@ -13,13 +13,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class CommandLineRunnerImpl implements CommandLineRunner {
 
-	@Autowired
-	GenerateWeatherDataService generateWeatherDataService;
+  @Autowired
+  GenerateWeatherDataService generateWeatherDataService;
 
-	@Override
-	public void run(String... args) throws Exception {
+  @Override
+  public void run(String... args) throws Exception {
 
-		generateWeatherDataService.refreshData();
-	}
+    generateWeatherDataService.refreshData();
+  }
 
 }

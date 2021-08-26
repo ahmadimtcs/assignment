@@ -1,4 +1,5 @@
 package com.clairvoyant.weather.document;
+
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,9 +19,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 public class WeatherDetails {
 
-	@Id
-	private Long id;
-	private String name;
-	private Double temp;
-	private Double feelsLike;
+  @Id
+  private Long id;
+  private String name;
+  private Double temp;
+  private Double feelsLike;
 }
