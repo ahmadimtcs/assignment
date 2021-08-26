@@ -19,7 +19,7 @@ public class CityRouter {
         return RouterFunctions.route()
                 .GET("/city", handler::getCityList)
                 .GET("/city/{name}", RequestPredicates.accept(MediaType.APPLICATION_JSON),handler::getCityByName)
-                .PUT("/update", RequestPredicates.contentType(MediaType.APPLICATION_JSON), handler::updateCity)
+                .PUT("/city/update", RequestPredicates.contentType(MediaType.APPLICATION_JSON), handler::updateCity)
                 .DELETE("/city/{id}", RequestPredicates.accept(MediaType.TEXT_PLAIN), handler::deleteCityById)
                 .build();
 

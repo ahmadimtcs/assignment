@@ -13,15 +13,13 @@ import reactor.core.publisher.Mono;
 
 @Component
 public class CityHandler {
-    @Autowired
-    private CityRepository repository;
 
-    @Autowired
+
+
     private CityService cityService;
 
 
-    public CityHandler(CityRepository repository, CityService cityService) {
-        this.repository = repository;
+    public CityHandler(CityService cityService) {
         this.cityService = cityService;
     }
 
@@ -38,7 +36,7 @@ public class CityHandler {
 
     public Mono<ServerResponse> updateCity(ServerRequest request) {
         return request.bodyToMono(City.class)
-                .flatMap(city -> cityService.updateCity(city))
+                .flatMap(cityService::updateCity)
                 .flatMap(modCity -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromValue(modCity)));
