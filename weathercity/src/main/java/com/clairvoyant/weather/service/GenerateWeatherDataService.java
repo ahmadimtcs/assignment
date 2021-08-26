@@ -65,6 +65,9 @@ public class GenerateWeatherDataService {
             JSONObject mainObject = obj.getJSONObject("main");
             cityDetails.setTemp(mainObject.getDouble("temp"));
             cityDetails.setFeels_like(mainObject.getDouble("feels_like"));
+            cityDetails.setTemp_max(mainObject.getDouble("temp_max"));
+            cityDetails.setTemp_min(mainObject.getDouble("temp_min"));
+            cityDetails.setPressure(mainObject.getDouble("pressure"));
           }
 
           cityRepository.save(cityDetails).subscribe();
