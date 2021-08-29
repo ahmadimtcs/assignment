@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+  mongo-database:
+    image: mongo
+    container_name: "mongo-database"
+    ports:
+      - 27017:27017
+    networks:
+      - my-assignment-network
+  weather-assigment:
+    image: weather-image
+    container_name: "weather-assigment"
+    ports:
+      - 8082:8082
+    depends_on:
+      - mongo-database
+    environment:
+      WAIT_HOSTS: mongo-database:27017
+    networks:
+      - my-assignment-network
+networks:
+    my-assignment-network:
+      driver: bridge
+
