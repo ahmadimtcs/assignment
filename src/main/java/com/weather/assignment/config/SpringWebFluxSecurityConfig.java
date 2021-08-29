@@ -14,20 +14,31 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableWebFluxSecurity
 public class SpringWebFluxSecurityConfig {
 
-	@Bean
-	SecurityWebFilterChain filterChain(ServerHttpSecurity httpSecurity) {
-		httpSecurity.authorizeExchange().pathMatchers(HttpMethod.GET, "/api/**").permitAll()
-				.pathMatchers(HttpMethod.DELETE).hasRole("ADMIN").anyExchange().authenticated().and().httpBasic()
-				.and().formLogin();
-		httpSecurity.csrf().disable();
-		return httpSecurity.build();
-	}
+  @Bean
+  SecurityWebFilterChain filterChain(ServerHttpSecurity httpSecurity) {
+    httpSecurity
+        .authorizeExchange()
+        .pathMatchers(HttpMethod.GET, "/api/**")
+        .permitAll()
+        .pathMatchers(HttpMethod.DELETE)
+        .hasRole("ADMIN")
+        .anyExchange()
+        .authenticated()
+        .and()
+        .httpBasic()
+        .and()
+        .formLogin();
+    httpSecurity.csrf().disable();
+    return httpSecurity.build();
+  }
 
-	@Bean
-	MapReactiveUserDetailsService mapReactiveUserDetailsService() {
-		PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-		UserDetails user = User.withUsername("user").password(passwordEncoder.encode("test")).roles("USER").build();
-		UserDetails user1 = User.withUsername("admin").password(passwordEncoder.encode("test")).roles("ADMIN").build();
-		return new MapReactiveUserDetailsService(user, user1);
-	}
+  @Bean
+  MapReactiveUserDetailsService mapReactiveUserDetailsService() {
+    PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    UserDetails user =
+        User.withUsername("user").password(passwordEncoder.encode("test")).roles("USER").build();
+    UserDetails admin =
+        User.withUsername("admin").password(passwordEncoder.encode("test")).roles("ADMIN").build();
+    return new MapReactiveUserDetailsService(user, admin);
+  }
 }
