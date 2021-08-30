@@ -20,15 +20,15 @@ public class ReactiveSecurity {
 
     http.csrf().disable()
         .authorizeExchange()
-            .pathMatchers(HttpMethod.GET).permitAll()
-            .pathMatchers(HttpMethod.PUT).permitAll()
-            .pathMatchers(HttpMethod.DELETE).hasRole("ADMIN")
-            .anyExchange()
-            .authenticated()
-            .and()
-            .httpBasic()
-            .and()
-            .formLogin();
+        .pathMatchers(HttpMethod.GET).permitAll()
+        .pathMatchers(HttpMethod.PUT).permitAll()
+        .pathMatchers(HttpMethod.DELETE).hasRole("ADMIN")
+        .anyExchange()
+        .authenticated()
+        .and()
+        .httpBasic()
+        .and()
+        .formLogin();
     return http.build();
   }
 
@@ -36,17 +36,17 @@ public class ReactiveSecurity {
   public MapReactiveUserDetailsService userService() {
 
     PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    UserDetails user1 = User.withUsername("user")
+    UserDetails user = User.withUsername("user")
         .password(encoder.encode("user"))
         .roles("USER")
         .build();
 
-    UserDetails user2 = User.withUsername("admin")
+    UserDetails admin = User.withUsername("admin")
         .password(encoder.encode("admin"))
         .roles("ADMIN")
         .build();
 
-    return new MapReactiveUserDetailsService(user1, user2);
+    return new MapReactiveUserDetailsService(user, admin);
   }
 
 }

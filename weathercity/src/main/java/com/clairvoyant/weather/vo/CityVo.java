@@ -1,4 +1,4 @@
-package com.clairvoyant.weather.Vo;
+package com.clairvoyant.weather.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

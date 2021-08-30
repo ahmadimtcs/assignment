@@ -6,5 +6,5 @@ import reactor.core.publisher.Mono;
 
 public interface CityRepository extends ReactiveMongoRepository<City, Long> {
 
-   Mono<City> findByName(String city);
+  Mono<City> findByName(String city);
 }

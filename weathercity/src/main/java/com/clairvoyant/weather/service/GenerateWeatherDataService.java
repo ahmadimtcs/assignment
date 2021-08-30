@@ -1,6 +1,6 @@
 package com.clairvoyant.weather.service;
 
-import static com.clairvoyant.weather.contants.CityConstants.OPEN_WEATHER_COMMON_URL;
+import static com.clairvoyant.weather.constants.CityConstants.OPEN_WEATHER_COMMON_URL;
 
 import com.clairvoyant.weather.model.City;
 import com.clairvoyant.weather.repository.CityRepository;
@@ -8,7 +8,6 @@ import java.time.Duration;
 import java.time.Instant;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -18,8 +17,11 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Service
 public class GenerateWeatherDataService {
 
-  @Autowired
-  private CityRepository cityRepository;
+  private final CityRepository cityRepository;
+
+  public GenerateWeatherDataService(CityRepository cityRepository) {
+    this.cityRepository = cityRepository;
+  }
 
   @Value("${weather.api.id}")
   private String apiId;

@@ -7,11 +7,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 public class WeatherCity {
 
-	public static void main(String[] args) {
+  public static void main(String[] args) {
 
-		SpringApplication.run(WeatherCity.class, args);
-		System.out.println("Done....");
+    SpringApplication.run(WeatherCity.class, args);
+    System.out.println("Done....");
 
-	}
+  }
 
 }

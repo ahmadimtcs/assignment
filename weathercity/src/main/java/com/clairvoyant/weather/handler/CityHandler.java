@@ -27,7 +27,7 @@ public class CityHandler {
 
     public Mono<ServerResponse> getCityList(ServerRequest request) {
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                .body(cityService.getAllBooks(), City.class);
+                .body(cityService.getAllCity(), City.class);
     }
 
     public Mono<ServerResponse> getCityByName(ServerRequest request) {
