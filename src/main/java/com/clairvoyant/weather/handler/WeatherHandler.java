@@ -31,7 +31,7 @@ public class WeatherHandler {
   /**
    * 25-May-2021 |Get All Weather Details
    */
-  public Mono<ServerResponse> getAllWeatherDetails(ServerRequest serverRequest) {
+  public Mono<ServerResponse> getAllWeatherDetails() {
     log.info("Inside Class WeatherHandler Method getAllWeatherDetails");
     Flux<WeatherDto> weatherDetails = weatherService.findAll();
     return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
@@ -42,7 +42,7 @@ public class WeatherHandler {
   /**
    * 25-May-2021 |Create Weather Detail
    */
-  public Mono<ServerResponse> createWeatherDetails(ServerRequest serverRequest) {
+  public Mono<ServerResponse> createWeatherDetails(final ServerRequest serverRequest) {
     log.info("Inside Class WeatherHandler Method createWeatherDetails");
     Mono<WeatherDto> weatherDto = serverRequest.bodyToMono(WeatherDto.class);
     return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
@@ -54,21 +54,21 @@ public class WeatherHandler {
   /**
    * 25-May-2021 |Update Weather Detail By Id
    */
-  public Mono<ServerResponse> updateWeatherDetails(ServerRequest serverRequest) {
+  public Mono<ServerResponse> updateWeatherDetails(final ServerRequest serverRequest) {
     log.info("Inside Class WeatherHandler Method updateWeatherDetails");
-    String id = serverRequest.pathVariable("id");
+    final String id = serverRequest.pathVariable("id");
     Mono<WeatherDto> weatherDto = serverRequest.bodyToMono(WeatherDto.class);
     return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-        .body(weatherService.updateWeatherDetails(Long.valueOf(id), weatherDto), WeatherDto.class)
+        .body(weatherService.updateWeatherDetails(Long.parseLong(id), weatherDto), WeatherDto.class)
         .switchIfEmpty(ServerResponse.notFound().build());
   }
 
   /**
    * 25-May-2021 | Weather Detail By City Name
    */
-  public Mono<ServerResponse> getWeatherDetailsByCity(ServerRequest serverRequest) {
+  public Mono<ServerResponse> getWeatherDetailsByCity(final ServerRequest serverRequest) {
     log.info("Inside Class WeatherHandler Method getWeatherDetailsByCity");
-    String city = serverRequest.pathVariable("city");
+    final String city = serverRequest.pathVariable("city");
     return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
         .body(weatherService.getWeatherDetailsByCity(city), WeatherDto.class)
         .switchIfEmpty(ServerResponse.notFound().build());
@@ -77,10 +77,10 @@ public class WeatherHandler {
   /**
    * 25-May-2021 |Delete Weather Detail By Id
    */
-  public Mono<ServerResponse> deleteWeatherDetailsById(ServerRequest serverRequest) {
+  public Mono<ServerResponse> deleteWeatherDetailsById(final ServerRequest serverRequest) {
     log.info("Inside Class WeatherHandler Method deleteWeatherDetailsById");
-    String id = serverRequest.pathVariable("id");
+    final String id = serverRequest.pathVariable("id");
     return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-        .body(weatherService.deleteWeatherDetailsById(Long.valueOf(id)), Void.class);
+        .body(weatherService.deleteWeatherDetailsById(Long.parseLong(id)), Void.class);
   }
 }

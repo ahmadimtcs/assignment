@@ -34,7 +34,7 @@ public class GenerateWeatherDataService {
     this.weatherProperties = weatherProperties;
   }
 
-  private WebClient webClient = WebClient.create(OPEN_WEATHER_BASE_URL);
+  private final WebClient webClient = WebClient.create(OPEN_WEATHER_BASE_URL);
   Instant start = Instant.now();
 
   public void refreshAfterTime() {

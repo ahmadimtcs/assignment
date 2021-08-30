@@ -24,6 +24,7 @@ import reactor.core.publisher.Mono;
  * @version 1.0
  * @date 19-08-2021 13:22
  */
+
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @AutoConfigureWebTestClient
@@ -35,83 +36,81 @@ class WeatherControllerTest {
   @MockBean
   private WeatherRepository weatherRepository;
 
+
   @Test
   @WithMockUser(roles = "ADMIN")
   void getAllWeatherDetails() {
-    WeatherDetails weatherDetails = new WeatherDetails();
-    weatherDetails.setId(null);
-    weatherDetails.setName("Mumbai");
-    weatherDetails.setTemp(299.12);
-    weatherDetails.setFeelsLike(300.12);
+    WeatherDetails weatherDetails = this.setupData();
     Mockito.when(weatherRepository.findAll()).thenReturn(Flux.just(weatherDetails));
-    webTestClient.get().uri(WEATHER_END_POINT).exchange().expectStatus().isOk().expectBody()
-        .jsonPath("[0].name")
-        .isEqualTo("Mumbai");
+    webTestClient.get().uri(WEATHER_END_POINT).exchange().expectStatus().isOk()
+        .expectBody()
+        .jsonPath("[0].name").isEqualTo(this.setupData().getName());
   }
 
   @Test
   @WithMockUser(roles = "ADMIN")
   void createWeatherDetails() {
-    WeatherDetails weatherDetails = new WeatherDetails();
-    weatherDetails.setId(null);
-    weatherDetails.setName("Mumbai");
-    weatherDetails.setTemp(299.12);
-    weatherDetails.setFeelsLike(300.12);
+    WeatherDetails weatherDetails = this.setupData();
 
     Mockito.when(weatherRepository.save(weatherDetails)).thenReturn(Mono.just(weatherDetails));
-    webTestClient.post().uri(WEATHER_END_POINT).bodyValue(weatherDetails).exchange().expectStatus()
-        .isOk()
-        .expectBody(WeatherDetails.class);
+    webTestClient.post().uri(WEATHER_END_POINT).bodyValue(weatherDetails).exchange()
+        .expectStatus()
+        .isOk().expectBody(WeatherDetails.class);
   }
 
   @Test
   @WithMockUser(roles = "ADMIN")
   void updateWeather() {
-    WeatherDetails weatherDetails = new WeatherDetails();
-    weatherDetails.setId(8131499L);
-    weatherDetails.setName("Mumbai");
-    weatherDetails.setTemp(299.12);
-    weatherDetails.setFeelsLike(300.12);
-    Mockito.when(weatherRepository.findById(8131499L)).thenReturn(Mono.just(weatherDetails));
+    WeatherDetails weatherDetails = this.setupData();
+    Mockito.when(weatherRepository.findById(this.setupData().getId()))
+        .thenReturn(Mono.just(weatherDetails));
     Mockito.when(weatherRepository.save(weatherDetails)).thenReturn(Mono.just(weatherDetails));
-    webTestClient.put().uri(WEATHER_END_POINT.concat("/{id}"), 8131499L).bodyValue(weatherDetails)
-        .exchange()
-        .expectStatus().isOk().expectBody(WeatherDetails.class);
+    webTestClient.put().uri(WEATHER_END_POINT.concat("/{id}"), this.setupData().getId())
+        .bodyValue(weatherDetails)
+        .exchange().expectStatus().isOk().expectBody(WeatherDetails.class);
 
   }
 
   @Test
   @WithMockUser(roles = "ADMIN")
   void getWeatherDetailsByCity() {
-    WeatherDetails weatherDetails = new WeatherDetails();
-    weatherDetails.setId(123L);
-    weatherDetails.setName("Mumbai");
-    weatherDetails.setTemp(299.12);
-    weatherDetails.setFeelsLike(300.12);
-    Mockito.when(weatherRepository.findByName("Mumbai")).thenReturn(Mono.just(weatherDetails));
-    webTestClient.get().uri(WEATHER_END_POINT.concat("/city/{city}"), "Mumbai").exchange()
-        .expectStatus().isOk()
-        .expectBody().jsonPath("$.name").isEqualTo("Mumbai");
+    WeatherDetails weatherDetails = this.setupData();
+    Mockito.when(weatherRepository.findByName(this.setupData().getName()))
+        .thenReturn(Mono.just(weatherDetails));
+    webTestClient.get()
+        .uri(WEATHER_END_POINT.concat("/city/{city}"), this.setupData().getName())
+        .exchange().expectStatus()
+        .isOk().expectBody().jsonPath("$.name").isEqualTo(this.setupData().getName());
 
-  }
-
-  @Test
-  @WithMockUser(roles = "ADMIN")
-  void getCityNotFoundException() {
-    Mockito.when(weatherRepository.findByName("Mumbai"))
-        .thenReturn(Mono.error(new NotFoundException("NotFoundException error message!")));
-    webTestClient.get().uri(WEATHER_END_POINT.concat("/city/{city}"), "Mumbai").exchange()
-        .expectStatus()
-        .isNotFound();
   }
 
   @Test
   @WithMockUser(roles = "ADMIN")
   void deleteWeatherDetails() {
-    Mockito.when(weatherRepository.deleteById(8131499L)).thenReturn(Mono.empty());
-    webTestClient.delete().uri(WEATHER_END_POINT.concat("/{id}"), 8131499L)
-        .accept(MediaType.APPLICATION_JSON)
-        .exchange().expectStatus().isOk().expectBody(Void.class);
+    Mockito.when(weatherRepository.deleteById(this.setupData().getId())).thenReturn(Mono.empty());
+    webTestClient.delete()
+        .uri(WEATHER_END_POINT.concat("/{id}"), this.setupData().getId())
+        .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk().expectBody(Void.class);
   }
 
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void getCityNotFoundException() {
+    Mockito.when(weatherRepository.findByName(this.setupData().getName()))
+        .thenReturn(Mono.error(new NotFoundException("NotFoundException error message!")));
+    webTestClient.get().uri(WEATHER_END_POINT.concat("/city/{city}"), this.setupData().getName())
+        .exchange()
+        .expectStatus()
+        .isNotFound();
+  }
+
+  WeatherDetails setupData() {
+    WeatherDetails weatherDetails = new WeatherDetails();
+    weatherDetails.setId(123L);
+    weatherDetails.setName("Mumbai");
+    weatherDetails.setTemp(299.12);
+    weatherDetails.setFeelsLike(300.12);
+    return weatherDetails;
+
+  }
 }

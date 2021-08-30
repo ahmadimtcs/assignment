@@ -33,12 +33,12 @@ public class SpringWebFluxSecurityConfig {
   public MapReactiveUserDetailsService userDetailsService() {
 
     PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    UserDetails user1 = User.withUsername("user").password(encoder.encode("user")).roles("USER")
+    UserDetails user = User.withUsername("user").password(encoder.encode("user")).roles("USER")
         .build();
-    UserDetails user2 = User.withUsername("admin").password(encoder.encode("admin")).roles("ADMIN")
+    UserDetails admin = User.withUsername("admin").password(encoder.encode("admin")).roles("ADMIN")
         .build();
 
-    return new MapReactiveUserDetailsService(user1, user2);
+    return new MapReactiveUserDetailsService(user, admin);
   }
 
 }
