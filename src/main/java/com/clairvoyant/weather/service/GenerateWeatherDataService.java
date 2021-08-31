@@ -1,15 +1,12 @@
 package com.clairvoyant.weather.service;
 
-import static com.clairvoyant.weather.contants.WeatherConstants.OPEN_WEATHER_BASE_URL;
-
 import com.clairvoyant.weather.config.WeatherProperties;
 import com.clairvoyant.weather.document.WeatherDetails;
+import com.clairvoyant.weather.dto.WeatherResponse;
 import com.clairvoyant.weather.repository.WeatherRepository;
 import java.time.Duration;
 import java.time.Instant;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -25,6 +22,7 @@ public class GenerateWeatherDataService {
 
   private final WeatherRepository weatherRepository;
   private final WeatherProperties weatherProperties;
+  private final WebClient webClient;
 
   @Autowired
   public GenerateWeatherDataService(WeatherRepository weatherRepository,
@@ -32,9 +30,9 @@ public class GenerateWeatherDataService {
     super();
     this.weatherRepository = weatherRepository;
     this.weatherProperties = weatherProperties;
+    this.webClient = WebClient.create(weatherProperties.getUrl());
   }
 
-  private final WebClient webClient = WebClient.create(OPEN_WEATHER_BASE_URL);
   Instant start = Instant.now();
 
   public void refreshAfterTime() {
@@ -53,19 +51,16 @@ public class GenerateWeatherDataService {
     webClient
         .get().uri("/find?lat=" + weatherProperties.getLat() + "&lon=" + weatherProperties.getLon()
         + "&cnt=10&appid=" + weatherProperties.getKey())
-        .retrieve().bodyToMono(String.class).subscribe(v -> {
-      JSONObject jsonObject = new JSONObject(v);
-      if (jsonObject.getString("cod").equals("200")) {
-        JSONArray arr = jsonObject.getJSONArray("list");
-        arr.forEach(item -> {
+        .retrieve().bodyToMono(WeatherResponse.class).subscribe(response -> {
+
+      if (response.getCod().equals("200")) {
+        response.getList().forEach(item -> {
           WeatherDetails weatherDetails = new WeatherDetails();
-          JSONObject obj = (JSONObject) item;
-          weatherDetails.setId(obj.getLong("id"));
-          weatherDetails.setName(obj.getString("name"));
-          if (obj.getJSONObject("main") != null) {
-            JSONObject mainObject = obj.getJSONObject("main");
-            weatherDetails.setTemp(mainObject.getDouble("temp"));
-            weatherDetails.setFeelsLike(mainObject.getDouble("feels_like"));
+          weatherDetails.setId(item.getId());
+          weatherDetails.setName(item.getName());
+          if (item.getMain() != null) {
+            weatherDetails.setTemp(item.getMain().getTemp());
+            weatherDetails.setFeelsLike(item.getMain().getFeelsLike());
           }
           weatherRepository.save(weatherDetails).subscribe();
         });

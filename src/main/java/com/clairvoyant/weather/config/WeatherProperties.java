@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "weather")
 public class WeatherProperties {
 
+  private String url;
   private String key;
   private String lon;
   private String lat;

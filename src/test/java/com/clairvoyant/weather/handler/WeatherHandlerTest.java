@@ -4,16 +4,18 @@ import static com.clairvoyant.weather.contants.WeatherConstants.WEATHER_FUNCTION
 
 import com.clairvoyant.weather.document.WeatherDetails;
 import com.clairvoyant.weather.repository.WeatherRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -24,7 +26,6 @@ import reactor.core.publisher.Mono;
  * @date 23-08-2021 14:11
  */
 @SpringBootTest
-@RunWith(SpringRunner.class)
 @AutoConfigureWebTestClient
 class WeatherHandlerTest {
 
@@ -34,21 +35,27 @@ class WeatherHandlerTest {
   @MockBean
   private WeatherRepository weatherRepository;
 
-  @Test
-  @WithMockUser(roles = "ADMIN")
-  void getAllWeatherDetails() {
-    WeatherDetails weatherDetails = this.setupData();
-    Mockito.when(weatherRepository.findAll()).thenReturn(Flux.just(weatherDetails));
-    webTestClient.get().uri(WEATHER_FUNCTIONAL_END_POINT).exchange().expectStatus().isOk()
-        .expectBody()
-        .jsonPath("[0].name").isEqualTo(this.setupData().getName());
+  private static WeatherDetails weatherDetails;
+
+  @BeforeAll
+  public static void setup() throws IOException {
+    weatherDetails = new ObjectMapper()
+        .readValue(new ClassPathResource("data/Weather.json").getFile(), WeatherDetails.class);
   }
 
   @Test
   @WithMockUser(roles = "ADMIN")
-  void createWeatherDetails() {
-    WeatherDetails weatherDetails = this.setupData();
+  void getAllWeatherDetails() {
+    Mockito.when(weatherRepository.findAll()).thenReturn(Flux.just(weatherDetails));
+    webTestClient.get().uri(WEATHER_FUNCTIONAL_END_POINT).exchange().expectStatus().isOk()
+        .expectBody()
+        .jsonPath("[0].name").isEqualTo(weatherDetails.getName());
+  }
 
+
+  @Test
+  @WithMockUser(roles = "ADMIN")
+  void createWeatherDetails() {
     Mockito.when(weatherRepository.save(weatherDetails)).thenReturn(Mono.just(weatherDetails));
     webTestClient.post().uri(WEATHER_FUNCTIONAL_END_POINT).bodyValue(weatherDetails).exchange()
         .expectStatus()
@@ -58,45 +65,32 @@ class WeatherHandlerTest {
   @Test
   @WithMockUser(roles = "ADMIN")
   void updateWeather() {
-    WeatherDetails weatherDetails = this.setupData();
-    Mockito.when(weatherRepository.findById(this.setupData().getId()))
+    Mockito.when(weatherRepository.findById(weatherDetails.getId()))
         .thenReturn(Mono.just(weatherDetails));
     Mockito.when(weatherRepository.save(weatherDetails)).thenReturn(Mono.just(weatherDetails));
-    webTestClient.put().uri(WEATHER_FUNCTIONAL_END_POINT.concat("/{id}"), this.setupData().getId())
+    webTestClient.put().uri(WEATHER_FUNCTIONAL_END_POINT.concat("/{id}"), weatherDetails.getId())
         .bodyValue(weatherDetails)
         .exchange().expectStatus().isOk().expectBody(WeatherDetails.class);
-
   }
+
 
   @Test
   @WithMockUser(roles = "ADMIN")
   void getWeatherDetailsByCity() {
-    WeatherDetails weatherDetails = this.setupData();
-    Mockito.when(weatherRepository.findByName(this.setupData().getName()))
+    Mockito.when(weatherRepository.findByName(weatherDetails.getName()))
         .thenReturn(Mono.just(weatherDetails));
     webTestClient.get()
-        .uri(WEATHER_FUNCTIONAL_END_POINT.concat("/city/{city}"), this.setupData().getName())
+        .uri(WEATHER_FUNCTIONAL_END_POINT.concat("/city/{city}"), weatherDetails.getName())
         .exchange().expectStatus()
-        .isOk().expectBody().jsonPath("$.name").isEqualTo(this.setupData().getName());
-
+        .isOk().expectBody().jsonPath("$.name").isEqualTo(weatherDetails.getName());
   }
 
   @Test
   @WithMockUser(roles = "ADMIN")
   void deleteWeatherDetails() {
-    Mockito.when(weatherRepository.deleteById(this.setupData().getId())).thenReturn(Mono.empty());
+    Mockito.when(weatherRepository.deleteById(weatherDetails.getId())).thenReturn(Mono.empty());
     webTestClient.delete()
-        .uri(WEATHER_FUNCTIONAL_END_POINT.concat("/{id}"), this.setupData().getId())
+        .uri(WEATHER_FUNCTIONAL_END_POINT.concat("/{id}"), weatherDetails.getId())
         .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk().expectBody(Void.class);
-  }
-
-  WeatherDetails setupData() {
-    WeatherDetails weatherDetails = new WeatherDetails();
-    weatherDetails.setId(123L);
-    weatherDetails.setName("Mumbai");
-    weatherDetails.setTemp(299.12);
-    weatherDetails.setFeelsLike(300.12);
-    return weatherDetails;
-
   }
 }
