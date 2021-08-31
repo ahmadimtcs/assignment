@@ -1,0 +1,64 @@
+plugins {
+    id 'org.springframework.boot' version '2.5.3'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id "com.palantir.docker" version "0.22.1"
+    id 'com.diffplug.gradle.spotless' version '3.25.0'
+
+}
+
+group = 'com.clairvoyant'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+docker {
+    name "guf12345/weather-app-image:${project.version}"
+    files 'build/libs/weather-0.0.1-SNAPSHOT.jar'
+    copySpec.into("build/libs")
+}
+spotless {
+    spotless {
+        java {
+            eclipse()
+            target project.fileTree(project.rootDir) {
+                include '**/*.java'
+                exclude '**/build/**'
+            }
+            enforceCheck true
+        }
+    }
+}
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'junit:junit:4.12'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    //For Open Api
+    implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.5.10'
+    //For Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    //for Json Parse
+    implementation 'org.json:json:20210307'
+    //Document to Dto Conversion
+    implementation 'org.modelmapper:modelmapper:2.4.4'
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+            {
+                exclude group: "com.vaadin.external.google", module: "android-json"
+            }
+    testImplementation 'io.projectreactor:reactor-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+}
+test {
+    useJUnitPlatform()
+}
