@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  assignmentdb:
+    image: mongo:latest
+    container_name: assignmentdb
+    ports:
+      - 27017:27017
+  assignmentAPI:
+    image: assignment
+    container_name: assignment
+    ports:
+      - 8080:8080
+    links:
+      - assignmentdb
