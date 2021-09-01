@@ -1,6 +1,5 @@
 package com.clairvoyant.weather.service;
 
-import static com.clairvoyant.weather.constants.CityConstants.OPEN_WEATHER_COMMON_URL;
 
 import com.clairvoyant.weather.model.City;
 import com.clairvoyant.weather.repository.CityRepository;
@@ -11,7 +10,6 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-
 
 
 @Service
@@ -41,6 +39,8 @@ public class GenerateWeatherDataService {
   @Value("${weather.api.zoom}")
   private String zoom;
 
+  @Value("${OPEN_WEATHER_COMMON_URL}")
+  private String OPEN_WEATHER_COMMON_URL;
 
   WebClient webClient = WebClient.create(OPEN_WEATHER_COMMON_URL);
   Instant start = Instant.now();
@@ -58,14 +58,15 @@ public class GenerateWeatherDataService {
 
   public void refreshData() {
 
-    http://api.openweathermap.org/data/2.5/box/city?bbox=12,32,15,37,10&appid=663bb81b407b9d418b985005577dc473
+    http:
+//api.openweathermap.org/data/2.5/box/city?bbox=12,32,15,37,10&appid=663bb81b407b9d418b985005577dc473
     webClient.get().
-        uri("/city?bbox="+lonleft+","+lonright+","+latbottom+","+lattop+","+zoom+"&appid=" + apiId).
+        uri("/city?bbox=" + lonleft + "," + lonright + "," + latbottom + "," + lattop + "," + zoom
+            + "&appid=" + apiId).
         retrieve().bodyToMono(String.class).subscribe(v -> {
       JSONObject jsonObject = new JSONObject(v);
 
-      if(jsonObject.getInt("cod")==200)
-      {
+      if (jsonObject.getInt("cod") == 200) {
         JSONArray arr = jsonObject.getJSONArray("list");
         arr.forEach(item -> {
           City cityDetails = new City();

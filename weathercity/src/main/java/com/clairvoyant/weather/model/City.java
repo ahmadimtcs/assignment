@@ -19,9 +19,7 @@ public class City {
   private Double temp;
   private Double feels_like;
 
-
   public City(String name, double temp, double feels_like) {
-
     this.name = name;
     this.temp = temp;
     this.feels_like = feels_like;
