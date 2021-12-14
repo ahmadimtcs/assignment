@@ -2,7 +2,6 @@ package com.assignment.exception;
 
 import lombok.extern.slf4j.Slf4j;
 
-
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.reactive.error.AbstractErrorWebExceptionHandler;
 
@@ -22,30 +21,27 @@ import java.util.Map;
 @Slf4j
 public class FunctionalErrorWebExceptionHandler extends AbstractErrorWebExceptionHandler {
 
-    public FunctionalErrorWebExceptionHandler(ErrorAttributes errorAttributes,
-                                              ApplicationContext applicationContext,
-                                              ServerCodecConfigurer serverCodecConfigurer) {
-        super(errorAttributes, new WebProperties.Resources(), applicationContext);
-        super.setMessageWriters(serverCodecConfigurer.getWriters());
-        super.setMessageReaders(serverCodecConfigurer.getReaders());
-    }
+  public FunctionalErrorWebExceptionHandler(
+      ErrorAttributes errorAttributes,
+      ApplicationContext applicationContext,
+      ServerCodecConfigurer serverCodecConfigurer) {
+    super(errorAttributes, new WebProperties.Resources(), applicationContext);
+    super.setMessageWriters(serverCodecConfigurer.getWriters());
+    super.setMessageReaders(serverCodecConfigurer.getReaders());
+  }
 
-    @Override
-    protected RouterFunction<ServerResponse> getRoutingFunction(ErrorAttributes errorAttributes) {
-        return RouterFunctions.route(RequestPredicates.all(), this::renderErrorResponse);
-    }
+  @Override
+  protected RouterFunction<ServerResponse> getRoutingFunction(ErrorAttributes errorAttributes) {
+    return RouterFunctions.route(RequestPredicates.all(), this::renderErrorResponse);
+  }
 
-    private Mono<ServerResponse> renderErrorResponse(ServerRequest serverRequest) {
+  private Mono<ServerResponse> renderErrorResponse(ServerRequest serverRequest) {
 
-        Map<String, Object> errorAttributesMap = getErrorAttributes(serverRequest, false);
-        log.info("errorAttributesMap : " + errorAttributesMap);
+    Map<String, Object> errorAttributesMap = getErrorAttributes(serverRequest, false);
+    log.info("errorAttributesMap : " + errorAttributesMap);
 
-        return ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
-             .contentType(MediaType.APPLICATION_JSON)
-            .body(BodyInserters.fromValue(errorAttributesMap.get("message")));
-    }
-
-
-
-
+    return ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(BodyInserters.fromValue(errorAttributesMap.get("message")));
+  }
 }

@@ -10,19 +10,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class CommandLineRunnerImpl implements CommandLineRunner {
 
-    @Autowired
-    private GenerateWeatherDataService generateWeatherDataService;
+  @Autowired private GenerateWeatherDataService generateWeatherDataService;
 
-    public CommandLineRunnerImpl(GenerateWeatherDataService generateWeatherDataService) {
-        this.generateWeatherDataService = generateWeatherDataService;
-    }
+  public CommandLineRunnerImpl(GenerateWeatherDataService generateWeatherDataService) {
+    this.generateWeatherDataService = generateWeatherDataService;
+  }
 
-    @Override
-    public void run(String... args) throws Exception {
-        generateWeatherDataService.refreshData();
-    }
-    @Bean
-    public ModelMapper modelMapper() {
-        return new ModelMapper();
-    }
+  @Override
+  public void run(String... args) throws Exception {
+    generateWeatherDataService.refreshData();
+  }
+
+  @Bean
+  public ModelMapper modelMapper() {
+    return new ModelMapper();
+  }
 }

@@ -15,19 +15,18 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class CityController {
 
-    private CityService cityService;
+  private CityService cityService;
 
-    public CityController(CityService cityService) {
-        this.cityService = cityService;
-    }
+  public CityController(CityService cityService) {
+    this.cityService = cityService;
+  }
 
-    @GetMapping("/city/{name}")
-    public Mono<ResponseEntity<City>> getCityByName(@PathVariable String name) {
-        log.info("Inside Class WeatherController Method getWeatherDetailsByCity");
-        return cityService.getCityByName(name)
-                .map(res -> new ResponseEntity<>(res, HttpStatus.OK))
-                .switchIfEmpty(Mono.error(new CityNotFoundException("NotFoundException  message!")));
-    }
-
-
+  @GetMapping("/city/{name}")
+  public Mono<ResponseEntity<City>> getCityByName(@PathVariable String name) {
+    log.info("Inside Class WeatherController Method getWeatherDetailsByCity");
+    return cityService
+        .getCityByName(name)
+        .map(res -> new ResponseEntity<>(res, HttpStatus.OK))
+        .switchIfEmpty(Mono.error(new CityNotFoundException("NotFoundException  message!")));
+  }
 }

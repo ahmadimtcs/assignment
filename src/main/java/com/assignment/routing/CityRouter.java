@@ -16,40 +16,37 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 @Configuration
 public class CityRouter {
 
-    @Bean
-    public RouterFunction<ServerResponse> reviewsRoute(CityHandler handler) {
-        return route()
-                .nest(path("/city"), builder ->{
-                    builder
-                            .GET("", handler::getCityList)
-                            .PUT("/update", RequestPredicates.contentType(MediaType.APPLICATION_JSON), handler::updateCity)
-                            .DELETE("/{id}",RequestPredicates.accept(MediaType.TEXT_PLAIN), handler::deleteCityById);})
+  @Bean
+  public RouterFunction<ServerResponse> reviewsRoute(CityHandler handler) {
+    return route()
+        .nest(
+            path("/city"),
+            builder -> {
+              builder
+                  .GET("", handler::getCityList)
+                  .PUT(
+                      "/update",
+                      RequestPredicates.contentType(MediaType.APPLICATION_JSON),
+                      handler::updateCity)
+                  .DELETE(
+                      "/{id}",
+                      RequestPredicates.accept(MediaType.TEXT_PLAIN),
+                      handler::deleteCityById);
+            })
+        .build();
+  }
 
-                .build();
-    }
+  @Bean
+  public RouterFunction<ServerResponse> errorRoute(CityHandler handler) {
+    return RouterFunctions.route(
+        GET("/error/runtime-exception").and(accept(MediaType.APPLICATION_JSON)), handler::cityEx);
+  }
 
-    @Bean
-    public RouterFunction<ServerResponse> errorRoute(CityHandler handler){
-        return RouterFunctions
-                .route(GET("/error/runtime-exception")
-                        .and(accept(MediaType.APPLICATION_JSON))
-                        ,handler::cityEx);
+  @Bean
+  public RouterFunction<ServerResponse> weatherRoute(CityHandler handler) {
 
-
-
-    }
-
-
-
-    @Bean
-    public RouterFunction<ServerResponse> weatherRoute(CityHandler handler) {
-
-        return (RouterFunction<ServerResponse>) RouterFunctions
-
-                .route(GET( "/city/{name}").and(accept(APPLICATION_JSON)),
-                       handler::getCityByName);
-    }
-
-
+    return (RouterFunction<ServerResponse>)
+        RouterFunctions.route(
+            GET("/city/{name}").and(accept(APPLICATION_JSON)), handler::getCityByName);
+  }
 }
-
