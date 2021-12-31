@@ -24,7 +24,7 @@ public class CityService {
     return repository.findByName(cityName);
   }
 
-  public Mono<?> updateCity(City updatedCity) {
+  public Mono<City> updateCity(City updatedCity) {
     return repository.save(updatedCity);
   }
 

@@ -1,0 +1,13 @@
+{
+  "id": 1259229,
+  "name": "Pune",
+  "temp": 297.82,
+  "feels_like": 297.47,
+  "temp_min": 297.82,
+  "temp_max": 297.82,
+  "pressure": 1016.0,
+  "humidity": 43,
+  "sea_level": 1016,
+  "grnd_level": 954,
+  "country": "IN"
+}

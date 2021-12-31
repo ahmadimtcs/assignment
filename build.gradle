@@ -2,6 +2,7 @@ plugins {
 	id 'org.springframework.boot' version '2.6.1'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
+	id 'jacoco'
 }
 
 group = 'com.assignment-openweatherapi-app'
@@ -22,15 +23,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive:2.5.6'
 	implementation 'org.springframework.boot:spring-boot-starter-validation:2.6.1'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux:2.6.1'
+	implementation 'org.projectlombok:lombok:1.18.20'
 	compileOnly 'org.projectlombok:lombok:1.18.22'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
 	testImplementation 'io.projectreactor:reactor-test'
-
-
-
-
 	implementation 'org.json:json:20210307'
 	implementation 'org.modelmapper:modelmapper:2.4.4'
 
@@ -38,5 +36,42 @@ dependencies {
 }
 
 test {
+	finalizedBy jacocoTestReport  //run right after ./gradlew clean build
 	useJUnitPlatform()
+
 }
+
+jacocoTestReport{                 //configuration for report formats.
+	dependsOn test
+	reports {
+		xml.enabled true
+		csv.enabled true
+		html.enabled true
+	}
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: [
+					"com/assignment/exception/**/CityDataException.class",
+					"com/assignment/exception/**/*CityNotFoundException.*",
+					"com/assignment/exception/**/*FunctionalErrorWebExceptionHandler.*",
+					"com/assignment/exceptionhandler/**/*GlobalErrorHandler.*",
+					"com/assignment/initialize/**/*CommandLineRunnerImpl.*",
+                     "com/assignment/constant/**/*CityConstants.*",
+					"com/assignment/service/**/*GenerateWeatherDataService.*"
+			])
+		}))
+	}
+
+	finalizedBy jacocoTestCoverageVerification  //run right after jacocoTestReport
+}
+jacocoTestCoverageVerification {   //Verifies the code coverage rule if enabled.
+	violationRules {
+		rule {
+			enabled = true
+			limit {
+				minimum = 0.25
+			}
+		}
+	}
+}
+

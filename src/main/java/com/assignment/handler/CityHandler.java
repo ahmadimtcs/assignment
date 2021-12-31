@@ -37,10 +37,6 @@ public class CityHandler {
         .switchIfEmpty(ServerResponse.notFound().build());
   }
 
-  private Mono<ServerResponse> buildCityResponse(Mono<City> cityBynameflix) {
-    return ServerResponse.ok().body(cityBynameflix, City.class);
-  }
-
   public Mono<ServerResponse> updateCity(ServerRequest request) {
     return request
         .bodyToMono(City.class)

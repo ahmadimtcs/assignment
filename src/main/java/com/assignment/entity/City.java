@@ -22,28 +22,4 @@ public class City {
   private Long sea_level;
   private Long grnd_level;
   private String country;
-
-  public City(
-      String name,
-      double temp,
-      double feels_like,
-      double temp_min,
-      double temp_max,
-      double pressure,
-      Long humidity,
-      Long sea_level,
-      Long grnd_level,
-      String country) {
-
-    this.name = name;
-    this.temp = temp;
-    this.feels_like = feels_like;
-    this.temp_max = temp_max;
-    this.temp_min = temp_min;
-    this.pressure = pressure;
-    this.humidity = humidity;
-    this.sea_level = sea_level;
-    this.grnd_level = grnd_level;
-    this.country = country;
-  }
 }

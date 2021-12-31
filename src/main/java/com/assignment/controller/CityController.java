@@ -21,7 +21,7 @@ public class CityController {
     this.cityService = cityService;
   }
 
-  @GetMapping("/city/{name}")
+  @GetMapping("/cityByName/{name}")
   public Mono<ResponseEntity<City>> getCityByName(@PathVariable String name) {
     log.info("Inside Class WeatherController Method getWeatherDetailsByCity");
     return cityService

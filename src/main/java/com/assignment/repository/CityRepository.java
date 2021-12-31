@@ -2,6 +2,7 @@ package com.assignment.repository;
 
 import com.assignment.entity.City;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
 public interface CityRepository extends ReactiveMongoRepository<City, Long> {
