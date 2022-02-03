@@ -1,4 +1,5 @@
 package com.assignment.openweather.exception;
 
-public class GenericException extends RuntimeException{
+public class GenericException extends RuntimeException {
+
 }
