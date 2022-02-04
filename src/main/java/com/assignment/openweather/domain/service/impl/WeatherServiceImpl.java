@@ -3,17 +3,16 @@ package com.assignment.openweather.domain.service.impl;
 import static java.lang.String.valueOf;
 
 import com.assignment.openweather.client.OpenAPIServiceRestClient;
-import com.assignment.openweather.domain.entity.WeatherEntity;
+import com.assignment.openweather.domain.entity.LocationEntity;
 import com.assignment.openweather.domain.mapper.CurrentMapper;
 import com.assignment.openweather.domain.mapper.WeatherMapper;
 import com.assignment.openweather.domain.model.dto.SearchDataResponseDTO;
 import com.assignment.openweather.domain.model.dto.WeatherDataResponseDTO;
-import com.assignment.openweather.domain.repository.WeatherInfoRepository;
+import com.assignment.openweather.domain.repository.LocationRepository;
 import com.assignment.openweather.domain.service.WeatherService;
 import com.assignment.openweather.rest.model.LocationDTO;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,7 +27,7 @@ import reactor.core.publisher.Mono;
 public class WeatherServiceImpl implements WeatherService {
 
   @Autowired
-  private WeatherInfoRepository weatherInfoRepository;
+  private LocationRepository weatherInfoRepository;
 
   @Autowired
   private OpenAPIServiceRestClient openAPIServiceRestClient;
@@ -44,8 +43,8 @@ public class WeatherServiceImpl implements WeatherService {
   @Transactional
   public Mono<List<String>> persist(LocationDTO locationDTO) {
     if (!CollectionUtils.isEmpty(locationDTO.getLocations())) {
-      Flux<WeatherEntity> weatherFlux = getWeatherEntityFlux(locationDTO);
-      return weatherFlux.map(WeatherEntity::getLocationName).collect(Collectors.toList());
+      Flux<LocationEntity> weatherFlux = getWeatherEntityFlux(locationDTO);
+      return weatherFlux.map(LocationEntity::getLocationName).collect(Collectors.toList());
     }
     return Mono.empty();
   }
@@ -60,16 +59,22 @@ public class WeatherServiceImpl implements WeatherService {
     return null;
   }
 
-  private Flux<WeatherEntity> getWeatherEntityFlux(LocationDTO locationDTO) {
+  @Override
+  public Flux<WeatherDataResponseDTO> get() {
+    Flux<LocationEntity> weatherEntityFlux = weatherInfoRepository.findAll().switchIfEmpty(Flux.empty());
+    return weatherEntityFlux.map(weatherMapper::fromEntity);
+  }
+
+  private Flux<LocationEntity> getWeatherEntityFlux(LocationDTO locationDTO) {
     List<SearchDataResponseDTO> searchDataResponseDTOS = new ArrayList<>();
     locationDTO.getLocations().forEach(location -> {
       Mono<SearchDataResponseDTO> searchDataResponseDTOMono = openAPIServiceRestClient.searchData(
           location);
       searchDataResponseDTOS.add(searchDataResponseDTOMono.block());
     });
-    List<WeatherEntity> weatherEntities = new ArrayList<>();
+    List<LocationEntity> weatherEntities = new ArrayList<>();
     searchDataResponseDTOS.forEach(searchDataResponseDTO -> {
-      WeatherEntity weatherEntity = new WeatherEntity();
+      LocationEntity weatherEntity = new LocationEntity();
       weatherEntity.setCreatedDate(LocalDate.now());
       weatherEntity.setModifiedDate(LocalDate.now());
       weatherEntity.setLatitude(searchDataResponseDTO.getList().get(0).getCoordinates().getLat());
