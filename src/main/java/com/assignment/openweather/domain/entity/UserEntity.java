@@ -15,7 +15,7 @@ import org.springframework.validation.annotation.Validated;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document
+@Document(value = "user-data")
 @Validated
 public class UserEntity implements UserDetails {
 

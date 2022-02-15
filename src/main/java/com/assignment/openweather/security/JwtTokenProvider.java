@@ -14,6 +14,7 @@ import org.jose4j.lang.JoseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -50,7 +51,7 @@ public class JwtTokenProvider {
 
     public Authentication getAuthentication() {
         return getContext().blockOptional()
-                .map(securityContext -> securityContext.getAuthentication())
+                .map(SecurityContext::getAuthentication)
                 .orElseThrow(() -> new AuthorizationServiceException("Not Authorized"));
     }
 

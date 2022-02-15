@@ -8,6 +8,9 @@ import reactor.util.retry.RetrySpec;
 
 public class RetryUtil {
 
+  private RetryUtil() {
+  }
+
   public static Retry retrySpec() {
     return RetrySpec.fixedDelay(3, Duration.ofSeconds(1))
         .filter((ex) -> ex instanceof ServiceException)

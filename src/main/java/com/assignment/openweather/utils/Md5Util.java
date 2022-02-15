@@ -6,6 +6,9 @@ import org.springframework.util.StringUtils;
 
 public class Md5Util {
 
+  private Md5Util() {
+  }
+
   public static String generateKey(Object... params) {
     if (params.length == 0) {
       return "";

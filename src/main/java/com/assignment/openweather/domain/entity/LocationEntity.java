@@ -14,7 +14,7 @@ import org.springframework.validation.annotation.Validated;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document
+@Document(value = "location")
 @Validated
 public class LocationEntity {
 

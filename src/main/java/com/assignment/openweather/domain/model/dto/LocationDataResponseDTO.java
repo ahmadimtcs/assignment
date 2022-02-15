@@ -9,7 +9,7 @@ import java.util.List;
 
 @JsonInclude(value = Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class WeatherDataResponseDTO {
+public class LocationDataResponseDTO {
 
   @JsonProperty("lon")
   private double lon;

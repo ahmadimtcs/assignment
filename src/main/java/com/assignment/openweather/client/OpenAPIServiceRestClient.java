@@ -3,8 +3,8 @@ package com.assignment.openweather.client;
 import static java.util.Collections.singletonList;
 
 import com.assignment.openweather.config.OpenAPIEnvironmentPropertyConfig;
+import com.assignment.openweather.domain.model.dto.LocationDataResponseDTO;
 import com.assignment.openweather.domain.model.dto.SearchDataResponseDTO;
-import com.assignment.openweather.domain.model.dto.WeatherDataResponseDTO;
 import com.assignment.openweather.exception.ClientException;
 import com.assignment.openweather.exception.ServiceException;
 import com.assignment.openweather.utils.RetryUtil;
@@ -66,7 +66,7 @@ public class OpenAPIServiceRestClient {
 
 
   @Cacheable(value = "weatherLocationData", key = "T(com.assignment.openweather.utils.Md5Util).generateKey(#latitude,#longitude)", unless = "#result == null")
-  public Mono<WeatherDataResponseDTO> getWeatherData(String latitude, String longitude) {
+  public Mono<LocationDataResponseDTO> getWeatherData(String latitude, String longitude) {
     MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
     queryParams.put("lat", singletonList(latitude));
     queryParams.put("lon", singletonList(longitude));
@@ -96,7 +96,7 @@ public class OpenAPIServiceRestClient {
           return clientResponse.bodyToMono(String.class)
               .flatMap(response -> Mono.error(new ServiceException(response)));
         }))
-        .bodyToMono(WeatherDataResponseDTO.class)
+        .bodyToMono(LocationDataResponseDTO.class)
         .retryWhen(RetryUtil.retrySpec())
         .log();
   }
