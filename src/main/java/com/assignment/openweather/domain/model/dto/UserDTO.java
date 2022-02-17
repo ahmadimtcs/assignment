@@ -1,22 +1,19 @@
-package com.assignment.openweather.security;
+package com.assignment.openweather.domain.model.dto;
+
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@JsonInclude(Include.NON_NULL)
-public class AuthenticatedUser {
-
+@JsonInclude(value = Include.NON_NULL)
+public class UserDTO {
+  private String userId;
   private String username;
-  private String userNameAs;
-  private String token;
-  private String ipAddress;
+  private String password;
+  private String roleCode;
 }

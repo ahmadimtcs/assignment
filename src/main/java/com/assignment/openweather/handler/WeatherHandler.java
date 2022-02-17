@@ -4,6 +4,7 @@ import com.assignment.openweather.domain.model.dto.LocationDataResponseDTO;
 import com.assignment.openweather.domain.service.WeatherService;
 import com.assignment.openweather.rest.model.LocationDTO;
 import java.util.Optional;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -13,21 +14,17 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
+@AllArgsConstructor
 public class WeatherHandler {
 
-  private final WeatherService weatherService;
-
-  @Autowired
-  public WeatherHandler(WeatherService weatherService) {
-    this.weatherService = weatherService;
-  }
+  private WeatherService weatherService;
 
   public Mono<ServerResponse> persist(ServerRequest serverRequest) {
     return serverRequest.bodyToMono(LocationDTO.class)
         .flatMap(weatherService::persist)
-        .flatMap(savedReview ->
+        .flatMap(location ->
             ServerResponse.status(HttpStatus.CREATED)
-                .bodyValue(savedReview));
+                .bodyValue(location));
   }
 
   public Mono<ServerResponse> getAll(ServerRequest serverRequest) {

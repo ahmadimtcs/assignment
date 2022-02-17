@@ -11,27 +11,31 @@ import com.assignment.openweather.domain.model.dto.LocationDataResponseDTO;
 import com.assignment.openweather.domain.model.dto.SearchDataResponseDTO;
 import com.assignment.openweather.handler.WeatherHandler;
 import java.util.List;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
+import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 @Configuration
 public class WeatherRouter {
 
+  @Bean
   public RouterFunction<ServerResponse> weatherRoute(WeatherHandler weatherHandler) {
-    return route(POST("/v1/locations/weather"),
-            req -> ok().body(
-                weatherHandler.persist(req), LocationDataResponseDTO.class))
-        .and(route(GET("/v1/locations"),
-            req -> ok().body(
-                weatherHandler.getAll(req), List.class)))
-        .and(route(GET("/v1/locations/{locationName}"),
-            req -> ok().body(
-                weatherHandler.get(req), List.class)))
-        .and(route(DELETE("/v1/locations/{locationName}"),
-            req -> {
-              weatherHandler.delete(req);
-              return noContent().build();
-            }));
+    return RouterFunctions
+        .route(RequestPredicates.POST("/v1/locations/weather")
+            .and(RequestPredicates.accept(MediaType.APPLICATION_JSON))
+            .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON)), weatherHandler::persist)
+        .andRoute(RequestPredicates.GET("/v1/locations")
+            .and(RequestPredicates.accept(MediaType.APPLICATION_JSON))
+            .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON)), weatherHandler::getAll)
+        .andRoute(RequestPredicates.GET("/v1/locations/{locationName}")
+            .and(RequestPredicates.accept(MediaType.APPLICATION_JSON))
+            .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON)), weatherHandler::get)
+        .andRoute(RequestPredicates.DELETE("/v1/locations/{locationName}")
+            .and(RequestPredicates.accept(MediaType.APPLICATION_JSON))
+            .and(RequestPredicates.contentType(MediaType.APPLICATION_JSON)), weatherHandler::delete);
   }
 }

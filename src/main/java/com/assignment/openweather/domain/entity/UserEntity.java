@@ -24,7 +24,7 @@ public class UserEntity implements UserDetails {
   private String userId;
 
   @Field(name = "user_name")
-  private String userName;
+  private String username;
 
   @Field(name = "password")
   private String password;
@@ -44,7 +44,7 @@ public class UserEntity implements UserDetails {
 
   @Override
   public String getUsername() {
-    return this.userName;
+    return this.username;
   }
 
   @Override

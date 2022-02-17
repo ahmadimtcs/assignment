@@ -1,10 +1,12 @@
 package com.assignment.openweather.security;
 
+import com.assignment.openweather.domain.model.dto.UserDTO;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.jose4j.jwe.ContentEncryptionAlgorithmIdentifiers;
 import org.jose4j.jwe.JsonWebEncryption;
@@ -55,17 +57,46 @@ public class JwtTokenProvider {
                 .orElseThrow(() -> new AuthorizationServiceException("Not Authorized"));
     }
 
-    public boolean validateToken(String token) {
-        try {
-            Jws<Claims> claims = Jwts
-                    .parserBuilder().setSigningKey(this.secretKey).build()
-                    .parseClaimsJws(token);
-            log.info("expiration date: {}", claims.getBody().getExpiration());
-            return true;
-        } catch (JwtException | IllegalArgumentException e) {
-            log.info("Invalid JWT token: {}", e.getMessage());
-        }
-        return false;
+
+    public Claims getAllClaimsFromToken(String token) {
+        return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
+    }
+
+    public String getUsernameFromToken(String token) {
+        return getAllClaimsFromToken(token).getSubject();
+    }
+
+    public Date getExpirationDateFromToken(String token) {
+        return getAllClaimsFromToken(token).getExpiration();
+    }
+
+    private Boolean isTokenExpired(String token) {
+        final Date expiration = getExpirationDateFromToken(token);
+        return expiration.before(new Date());
+    }
+
+    public String generateToken(UserDTO user) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", user.getRoleCode());
+        return doGenerateToken(claims, user.getUsername());
+    }
+
+    private String doGenerateToken(Map<String, Object> claims, String username) {
+        long expirationTimeLong = Long.parseLong("3600");
+        final Date createdDate = new Date();
+        final Date expirationDate = new Date(createdDate.getTime() + expirationTimeLong * 1000);
+
+        return Jwts.builder()
+            .setClaims(claims)
+            .setSubject(username)
+            .setIssuedAt(createdDate)
+            .setExpiration(expirationDate)
+            .signWith(this.secretKey)
+            .compact();
+    }
+
+    public Boolean validateToken(String token) {
+        return !isTokenExpired(token);
     }
 
 }

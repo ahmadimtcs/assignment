@@ -103,6 +103,7 @@ public class WeatherServiceImpl implements WeatherService {
           location);
       searchDataResponseDTOS.add(searchDataResponseDTOMono.block());
     });
+    Flux<SearchDataResponseDTO> searchDataResponseDTOFlux = Flux.create()
     List<LocationEntity> locationEntities = new ArrayList<>();
     searchDataResponseDTOS.forEach(searchDataResponseDTO -> {
       LocationEntity locationEntity = new LocationEntity();
