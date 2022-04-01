@@ -35,14 +35,15 @@ public class UserCityHandler {
   public Mono<ServerResponse> findCity(ServerRequest request) {
 
     return request.bodyToMono(City.class)
-        .doOnNext(city -> this.validateCity(city))
+        .flatMap(city -> validateCity(city))
         .flatMap(cityService::findCityByNameInOpenWeather)
         .flatMap(value -> ServerResponse.ok().bodyValue(value))
-        .switchIfEmpty(Mono.error(new ResourceNotFoundException("City details are invalid")))
+        .switchIfEmpty(
+            Mono.defer(() -> Mono.error(new ResourceNotFoundException("City details are invalid"))))
         .log();
   }
 
-  public void validateCity(City city) {
+  public Mono<City> validateCity(City city) {
     var constraintViolations = validator.validate(city);
 
     if (CollectionUtils.isNotEmpty(constraintViolations)) {
@@ -53,6 +54,7 @@ public class UserCityHandler {
       log.info("Constraint Violations are {}", errorMessage);
       throw new BadDataException(errorMessage);
     }
+    return Mono.just(city);
   }
 
   public Mono<ServerResponse> addUserCities(ServerRequest request) {
