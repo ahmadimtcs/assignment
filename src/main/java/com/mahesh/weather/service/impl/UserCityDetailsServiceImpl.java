@@ -5,7 +5,6 @@ import com.mahesh.weather.repository.UserCityDetailsReactiveRepository;
 import com.mahesh.weather.service.UserCityDetailsService;
 import java.util.HashSet;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -13,13 +12,16 @@ import reactor.core.publisher.Mono;
 @Service
 public class UserCityDetailsServiceImpl implements UserCityDetailsService {
 
-  @Autowired
-  UserCityDetailsReactiveRepository userCityDetailsReactiveRepository;
+  private final UserCityDetailsReactiveRepository userCityDetailsReactiveRepository;
+
+  UserCityDetailsServiceImpl(UserCityDetailsReactiveRepository userCityDetailsReactiveRepository) {
+    this.userCityDetailsReactiveRepository = userCityDetailsReactiveRepository;
+  }
 
   @Override
   public Mono<UserCityDetails> findOrCreateUserCityDetails(String userId) {
     return userCityDetailsReactiveRepository.findByUserId(userId)
-        .switchIfEmpty(this.addUserCityDetails(userId))
+        .switchIfEmpty(Mono.defer(() -> this.addUserCityDetails(userId)))
         .log();
   }
 
@@ -32,6 +34,18 @@ public class UserCityDetailsServiceImpl implements UserCityDetailsService {
   @Override
   public Mono<UserCityDetails> save(UserCityDetails userCityDetails) {
     return userCityDetailsReactiveRepository.save(userCityDetails);
+  }
+
+  @Override
+  public Mono<UserCityDetails> update(UserCityDetails userCityDetails) {
+    return userCityDetailsReactiveRepository.findByUserId(userCityDetails.getUserId())
+        .flatMap(ucd -> {
+          log.info("Cities size before update in update Method {}", ucd.getCities().size());
+          ucd.getCities().addAll(userCityDetails.getCities());
+          log.info("Cities size after update in update Method {}", ucd.getCities().size());
+          return userCityDetailsReactiveRepository.save(ucd);
+        })
+        .switchIfEmpty(Mono.defer(() -> Mono.empty()));
   }
 
   @Override

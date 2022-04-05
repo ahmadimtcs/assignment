@@ -14,4 +14,6 @@ public interface UserCityDetailsService {
   Mono<Void> removeUserCityDetails(UserCityDetails userCityDetails);
 
   Mono<Void> removeById(String userId);
+
+  Mono<UserCityDetails> update(UserCityDetails userCityDetails);
 }

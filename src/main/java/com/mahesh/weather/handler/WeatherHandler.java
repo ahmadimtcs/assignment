@@ -6,7 +6,6 @@ import com.mahesh.weather.service.UserCityDetailsService;
 import com.mahesh.weather.service.WeatherDetailsService;
 import com.mahesh.weather.util.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -18,14 +17,19 @@ import reactor.core.publisher.Mono;
 @Component
 public class WeatherHandler {
 
-  @Autowired
-  UserCityDetailsService userCityDetailsService;
+  private UserCityDetailsService userCityDetailsService;
 
-  @Autowired
-  WeatherDetailsService weatherDetailsService;
+  private WeatherDetailsService weatherDetailsService;
 
-  @Value(value = "${key.refresh-interval}")
-  private String REFRESH_INTERVAL;
+  private Long REFRESH_INTERVAL;
+
+  WeatherHandler(UserCityDetailsService userCityDetailsService,
+      WeatherDetailsService weatherDetailsService,
+      @Value(value = "${key.refresh-interval}") String refreshInterval) {
+    this.userCityDetailsService = userCityDetailsService;
+    this.weatherDetailsService = weatherDetailsService;
+    this.REFRESH_INTERVAL = Long.parseLong(refreshInterval);
+  }
 
 
   public Mono<ServerResponse> getWeatherOfAllUserCitiesWithCache() {
@@ -38,8 +42,8 @@ public class WeatherHandler {
         .flatMap(city -> weatherDetailsService.findByCityNameAndCountryWithCache(city).log())
         .collectList()
         .flatMap(weatherDetails -> ServerResponse.ok().bodyValue(weatherDetails))
-        .switchIfEmpty(Mono.error(
-            new ResourceNotFoundException("Weather details are not found for user cities")))
+        .switchIfEmpty(Mono.defer(() -> Mono.error(
+            new ResourceNotFoundException("Weather details are not found for user cities"))))
         .log();
   }
 
@@ -54,7 +58,7 @@ public class WeatherHandler {
           var weatherDetailsMongo = //weatherDetailsService.findByLatAndLon(city.getLat(), city.getLon())
               weatherDetailsService.findByCityNameAndCountry(StringUtils.capitalize(city.getName()),
                       StringUtils.upperCase(city.getCountry()))
-                  .switchIfEmpty(weatherDetailsService.getOpenWeatherForCity(city))
+                  .switchIfEmpty(Mono.defer(() -> weatherDetailsService.getOpenWeatherForCity(city)))
                   .log();
           return weatherDetailsMongo;
         })
@@ -64,7 +68,7 @@ public class WeatherHandler {
 //                    if((currentTimeStamp - lastRefreshedTime) > (Integer.parseInt(REFRESH_INTERVAL) * 60000)) {
 //                        log.info("Getting latest weather information from OpenWeather");
 //                        var updatedWeather = this.getOpenWeatherForCity(weather.getCity())
-//                                .switchIfEmpty(Mono.empty())
+//                                .switchIfEmpty(Mono.defer(() -> Mono.empty()))
 //                                .flatMap(weatherDetails1 -> {
 //                                    weatherDetails1.setWeatherId(weather.getWeatherId());
 //                                    return weatherDetailsService.save(weatherDetails1);
@@ -93,8 +97,8 @@ public class WeatherHandler {
     return response
         .collectList()
         .flatMap(weatherDetails -> ServerResponse.ok().bodyValue(weatherDetails))
-        .switchIfEmpty(Mono.error(
-            new ResourceNotFoundException("Weather details are not found for user cities")))
+        .switchIfEmpty(Mono.defer(() -> Mono.error(
+            new ResourceNotFoundException("Weather details are not found for user cities"))))
         .log();
   }
 
@@ -138,7 +142,7 @@ public class WeatherHandler {
                   wd.setWeatherId(weatherDetails.getWeatherId());
                   return weatherDetailsService.update(wd).log();
                 })
-                .switchIfEmpty(Mono.empty())
+                .switchIfEmpty(Mono.defer(() -> Mono.empty()))
                 .log();
           } else {
             log.info("No need to get latest weather information from OpenWeather");
@@ -146,8 +150,8 @@ public class WeatherHandler {
           }
         })
         .flatMap(weatherDetails -> ServerResponse.ok().bodyValue(weatherDetails))
-        .switchIfEmpty(Mono.error(
-            new ResourceNotFoundException("Weather details are not found for user city")))
+        .switchIfEmpty(Mono.defer(() -> Mono.error(
+            new ResourceNotFoundException("Weather details are not found for user city"))))
         .log();
   }
 */
@@ -172,8 +176,8 @@ public class WeatherHandler {
               .log();
         })
         .flatMap(weatherDetails -> ServerResponse.ok().bodyValue(weatherDetails))
-        .switchIfEmpty(Mono.error(
-            new ResourceNotFoundException("Weather details are not found for user city")))
+        .switchIfEmpty(Mono.defer(() -> Mono.error(
+            new ResourceNotFoundException("Weather details are not found for user city"))))
         .log();
   }
 

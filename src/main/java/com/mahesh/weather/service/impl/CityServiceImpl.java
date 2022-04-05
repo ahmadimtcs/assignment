@@ -5,7 +5,6 @@ import com.mahesh.weather.model.City;
 import com.mahesh.weather.repository.CityReactiveRepository;
 import com.mahesh.weather.service.CityService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -13,11 +12,15 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class CityServiceImpl implements CityService {
 
-  @Autowired
-  CityReactiveRepository cityReactiveRepository;
+  private CityReactiveRepository cityReactiveRepository;
 
-  @Autowired
-  OpenWeatherRestClient openWeatherRestClient;
+  private OpenWeatherRestClient openWeatherRestClient;
+
+  CityServiceImpl(CityReactiveRepository cityReactiveRepository,
+      OpenWeatherRestClient openWeatherRestClient) {
+    this.cityReactiveRepository = cityReactiveRepository;
+    this.openWeatherRestClient = openWeatherRestClient;
+  }
 
   @Override
   public Mono<City> findByNameAndCountry(String name, String country) {
@@ -33,7 +36,7 @@ public class CityServiceImpl implements CityService {
   public Mono<City> checkCityInOpenWeather(City city) {
     return openWeatherRestClient.findCityByName(city)
         .flatMap(this::save)
-        .switchIfEmpty(Mono.empty())
+        .switchIfEmpty(Mono.defer(() -> Mono.empty()))
         .log();
   }
 

@@ -23,13 +23,13 @@ import reactor.test.StepVerifier;
 class CityServiceTest {
 
   @Mock
-  CityReactiveRepository cityReactiveRepository;
+  private CityReactiveRepository cityReactiveRepository;
 
   @InjectMocks
-  CityServiceImpl cityService;
+  private CityServiceImpl cityService;
 
   @Mock
-  OpenWeatherRestClient openWeatherRestClient;
+  private OpenWeatherRestClient openWeatherRestClient;
 
   @BeforeEach
   void setUp() {

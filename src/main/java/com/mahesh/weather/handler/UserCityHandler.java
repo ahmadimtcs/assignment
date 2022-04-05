@@ -13,7 +13,6 @@ import javax.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -23,19 +22,23 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class UserCityHandler {
 
-  @Autowired
-  CityService cityService;
+  private CityService cityService;
 
-  @Autowired
-  Validator validator;
+  private Validator validator;
 
-  @Autowired
-  UserCityDetailsService userCityDetailsService;
+  private UserCityDetailsService userCityDetailsService;
+
+  UserCityHandler(CityService cityService, Validator validator,
+      UserCityDetailsService userCityDetailsService) {
+    this.cityService = cityService;
+    this.validator = validator;
+    this.userCityDetailsService = userCityDetailsService;
+  }
 
   public Mono<ServerResponse> findCity(ServerRequest request) {
 
     return request.bodyToMono(City.class)
-        .flatMap(city -> validateCity(city))
+        .flatMap(this::validateCity)
         .flatMap(cityService::findCityByNameInOpenWeather)
         .flatMap(value -> ServerResponse.ok().bodyValue(value))
         .switchIfEmpty(
@@ -64,7 +67,7 @@ public class UserCityHandler {
           log.info("City Name :=> {} Country:=>  {}", city.getName(), city.getCountry());
           return cityService.findByNameAndCountry(StringUtils.capitalize(city.getName()),
                   StringUtils.upperCase(city.getCountry()))
-              .switchIfEmpty(cityService.checkCityInOpenWeather(city));
+              .switchIfEmpty(Mono.defer(() -> cityService.checkCityInOpenWeather(city)));
         }).collect(Collectors.toSet())
         .flatMap(cities -> {
           log.info("Cities size to be added :=> {}", cities.size());
@@ -81,7 +84,40 @@ public class UserCityHandler {
               });
         })
         .flatMap(userCityDetails -> ServerResponse.ok().bodyValue(userCityDetails))
-        .switchIfEmpty(Mono.error(new ResourceNotFoundException("City details are invalid")))
+        .switchIfEmpty(
+            Mono.defer(() -> Mono.error(new ResourceNotFoundException("City details are invalid"))))
+        .log();
+  }
+
+  //TODO: Only one city is getting saved in database.
+  // userCityDetailsService::findOrCreateUserCityDetails is always returning same value for all elements of Flux
+  public Mono<ServerResponse> addUserCitiesFlux(ServerRequest request) {
+
+    return request.bodyToFlux(City.class)
+        .flatMap(city -> {
+          log.info("City Name :=> {} Country:=>  {}", city.getName(), city.getCountry());
+          return cityService.findByNameAndCountry(StringUtils.capitalize(city.getName()),
+                  StringUtils.upperCase(city.getCountry()))
+              .switchIfEmpty(Mono.defer(() -> cityService.checkCityInOpenWeather(city)));
+        })
+        .map(city -> {
+          CommonUtil.getLoggedInUserId()
+              .flatMap(userCityDetailsService::findOrCreateUserCityDetails)
+              .map(userCityDetails -> {
+                log.info("Cities size Before update :=> {}", userCityDetails.getCities().size());
+                userCityDetails.addCity(city);
+                log.info("Cities size After update :=> {}", userCityDetails.getCities().size());
+                userCityDetailsService.update(userCityDetails).subscribe();
+                return userCityDetails;
+              })
+              .switchIfEmpty(Mono.defer(() -> {
+                log.info("User City Details are not Found");
+                return Mono.empty();
+              })).subscribe();
+          return city;
+        })
+        .collectList()
+        .flatMap(citiesSaved -> ServerResponse.ok().bodyValue(citiesSaved))
         .log();
   }
 
@@ -89,15 +125,15 @@ public class UserCityHandler {
     return CommonUtil.getLoggedInUserId()
         .flatMap(userCityDetailsService::findUserCityDetails)
         .flatMap(value -> ServerResponse.ok().bodyValue(value))
-        .switchIfEmpty(
-            Mono.error(new ResourceNotFoundException("City details are not found for user")))
+        .switchIfEmpty(Mono.defer(
+            () -> Mono.error(new ResourceNotFoundException("City details are not found for user"))))
         .log();
   }
 
   public Mono<ServerResponse> addUserCity(ServerRequest request) {
     return request.bodyToMono(City.class)
         .flatMap(city -> cityService.findByNameAndCountry(city.getName(), city.getCountry())
-            .switchIfEmpty(cityService.checkCityInOpenWeather(city))
+            .switchIfEmpty(Mono.defer(() -> cityService.checkCityInOpenWeather(city)))
             .log())
         .flatMap(city -> CommonUtil.getLoggedInUserId()
             .flatMap(userCityDetailsService::findOrCreateUserCityDetails)
@@ -109,7 +145,8 @@ public class UserCityHandler {
               return userCityDetailsService.save(userCityDetails);
             }))
         .flatMap(userCityDetails -> ServerResponse.ok().bodyValue(userCityDetails))
-        .switchIfEmpty(Mono.error(new ResourceNotFoundException("City details are invalid")))
+        .switchIfEmpty(
+            Mono.defer(() -> Mono.error(new ResourceNotFoundException("City details are invalid"))))
         .log();
   }
 
@@ -120,7 +157,7 @@ public class UserCityHandler {
           log.info("City Name :=> {} Country:=>  {}", city.getName(), city.getCountry());
           return cityService.findByNameAndCountry(StringUtils.capitalize(city.getName()),
                   StringUtils.upperCase(city.getCountry()))
-              .switchIfEmpty(cityService.checkCityInOpenWeather(city));
+              .switchIfEmpty(Mono.defer(() -> cityService.checkCityInOpenWeather(city)));
         }).collect(Collectors.toSet())
         .flatMap(cities -> {
           log.info("Cities size to be added :=> {}", cities.size());
@@ -135,7 +172,8 @@ public class UserCityHandler {
               });
         })
         .flatMap(userCityDetails -> ServerResponse.ok().bodyValue(userCityDetails))
-        .switchIfEmpty(Mono.error(new ResourceNotFoundException("City details are invalid")))
+        .switchIfEmpty(
+            Mono.defer(() -> Mono.error(new ResourceNotFoundException("City details are invalid"))))
         .log();
   }
 
@@ -148,8 +186,8 @@ public class UserCityHandler {
           userCityDetailsService.removeById(userCityDetails.getId()).log();
           return ServerResponse.ok().build();
         })
-        .switchIfEmpty(
-            Mono.error(new ResourceNotFoundException("City details are not found for user")))
+        .switchIfEmpty(Mono.defer(
+            () -> Mono.error(new ResourceNotFoundException("City details are not found for user"))))
         .log();
   }
 
@@ -163,8 +201,8 @@ public class UserCityHandler {
           return userCityDetailsService.save(userCityDetails);
         })
         .flatMap(userCityDetails -> ServerResponse.ok().bodyValue(userCityDetails))
-        .switchIfEmpty(
-            Mono.error(new ResourceNotFoundException("City details are not found for user")))
+        .switchIfEmpty(Mono.defer(() ->
+            Mono.error(new ResourceNotFoundException("City details are not found for user"))))
         .log();
   }
 }

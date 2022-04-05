@@ -36,29 +36,30 @@ import uk.co.jemos.podam.api.PodamFactoryImpl;
 @AutoConfigureWebTestClient
 class WeatherHandlerTest {
 
-  static String WEATHER_ENDPOINT = "/v1/weatherCache";
-  PodamFactory factory = new PodamFactoryImpl();
+  private static String WEATHER_ENDPOINT = "/v1/weatherCache";
+
+  private PodamFactory factory = new PodamFactoryImpl();
 
   @MockBean
-  WeatherDetailsService weatherDetailsService;
+  private WeatherDetailsService weatherDetailsService;
 
   @MockBean
-  UserCityDetailsService userCityDetailsService;
+  private UserCityDetailsService userCityDetailsService;
 
   @MockBean
-  OpenWeatherRestClient openWeatherRestClient;
+  private OpenWeatherRestClient openWeatherRestClient;
 
   @MockBean
-  CityService cityService;
+  private CityService cityService;
 
   @Autowired
-  WebTestClient webTestClient;
+  private WebTestClient webTestClient;
 
-  City city;
+  private City city;
 
-  UserCityDetails userCityDetails;
+  private UserCityDetails userCityDetails;
 
-  WeatherDetails weatherDetails;
+  private WeatherDetails weatherDetails;
 
   @BeforeEach
   void setUp() {

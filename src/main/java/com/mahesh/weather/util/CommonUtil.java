@@ -16,7 +16,11 @@ public class CommonUtil {
         .map(authentication -> {
           log.info("Logged In UserName :=> {}", authentication.getName());
           return authentication.getName();
-        });
+        })
+        .switchIfEmpty(Mono.defer(() -> {
+          log.info("Logged in username is not found. Returning user as username");
+          return Mono.just("user");
+        }));
   }
 
 }

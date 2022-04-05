@@ -21,15 +21,15 @@ import uk.co.jemos.podam.api.PodamFactoryImpl;
 @WebFluxTest
 class UserCityDetailsServiceTest {
 
-  UserCityDetails userCity;
+  private UserCityDetails userCity;
 
-  PodamFactory factory = new PodamFactoryImpl();
+  private PodamFactory factory = new PodamFactoryImpl();
 
   @Mock
-  UserCityDetailsReactiveRepository userCityDetailsReactiveRepositoryMock;
+  private UserCityDetailsReactiveRepository userCityDetailsReactiveRepositoryMock;
 
   @InjectMocks
-  UserCityDetailsServiceImpl userCityDetailsService;
+  private UserCityDetailsServiceImpl userCityDetailsService;
 
   @BeforeEach
   void setUp() {

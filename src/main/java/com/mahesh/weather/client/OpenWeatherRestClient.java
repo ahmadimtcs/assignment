@@ -6,7 +6,6 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
@@ -19,17 +18,23 @@ import reactor.core.publisher.Mono;
 @Service
 public class OpenWeatherRestClient {
 
-  @Autowired
-  WebClient webClient;
+  private WebClient webClient;
 
-  @Value(value = "${key.geolocation-url}")
   private String GEOLOCATION_URL;
 
-  @Value(value = "${key.openweather-url}")
   private String OPENWEATHER_URL;
 
-  @Value(value = "${key.api-key}")
   private String API_KEY;
+
+  OpenWeatherRestClient(WebClient webClient,
+      @Value(value = "${key.geolocation-url}") String geoLocationURL,
+      @Value(value = "${key.openweather-url}") String openWeatherURL,
+      @Value(value = "${key.api-key}") String apiKey) {
+    this.webClient = webClient;
+    this.GEOLOCATION_URL = geoLocationURL;
+    this.OPENWEATHER_URL = openWeatherURL;
+    this.API_KEY = apiKey;
+  }
 
   public Mono<City> findCityByName(City city) {
     var params = new StringBuilder().append(city.getName());
@@ -70,7 +75,7 @@ public class OpenWeatherRestClient {
         .uri(uri)
         .accept(MediaType.APPLICATION_JSON)
         .exchangeToMono(clientResponse -> clientResponse.bodyToMono(WeatherDetails.class))
-        .switchIfEmpty(Mono.empty())
+        .switchIfEmpty(Mono.defer(() -> Mono.empty()))
         .log();
     return response;
   }

@@ -36,28 +36,28 @@ import uk.co.jemos.podam.api.PodamFactoryImpl;
 @AutoConfigureWebTestClient
 class UserCityTest {
 
-  PodamFactory factory = new PodamFactoryImpl();
+  private PodamFactory factory = new PodamFactoryImpl();
 
   @MockBean
-  UserCityDetailsService userCityDetailsServiceMock;
+  private UserCityDetailsService userCityDetailsServiceMock;
 
   @Autowired
-  WebTestClient webTestClient;
+  private WebTestClient webTestClient;
 
-  UserCityDetails userCity;
-  City city;
-
-  @MockBean
-  OpenWeatherRestClient openWeatherRestClientMock;
+  private UserCityDetails userCity;
+  private City city;
 
   @MockBean
-  CityService cityServiceMock;
+  private OpenWeatherRestClient openWeatherRestClientMock;
 
   @MockBean
-  WeatherDetailsService weatherDetailsService;
+  private CityService cityServiceMock;
 
   @MockBean
-  CityReactiveRepository cityReactiveRepository;
+  private WeatherDetailsService weatherDetailsService;
+
+  @MockBean
+  private CityReactiveRepository cityReactiveRepository;
 
   static String USER_CITY_ENDPOINT = "/v1/userCity";
   static String USER_CITIES_ENDPOINT = "/v1/userCities";

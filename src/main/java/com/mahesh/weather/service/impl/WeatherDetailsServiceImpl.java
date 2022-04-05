@@ -10,7 +10,6 @@ import com.mahesh.weather.service.WeatherDetailsService;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -21,21 +20,22 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class WeatherDetailsServiceImpl implements WeatherDetailsService {
 
-  Cache caffeineCache;
+  private Cache caffeineCache;
 
-  @Autowired
-  WeatherDetailsReactiveRepository weatherDetailsReactiveRepository;
+  private WeatherDetailsReactiveRepository weatherDetailsReactiveRepository;
 
-  @Autowired
-  OpenWeatherRestClient openWeatherRestClient;
+  private OpenWeatherRestClient openWeatherRestClient;
 
-  //  @Value(value = "${key.refresh-interval}")
   private Long REFRESH_INTERVAL;
 
 
   public WeatherDetailsServiceImpl(
+      WeatherDetailsReactiveRepository weatherDetailsReactiveRepository,
+      OpenWeatherRestClient openWeatherRestClient,
       @Value(value = "${key.refresh-interval}") String refreshInterval) {
-    REFRESH_INTERVAL = Objects.nonNull(refreshInterval) ? Long.parseLong(refreshInterval) : 2l;
+    this.weatherDetailsReactiveRepository = weatherDetailsReactiveRepository;
+    this.openWeatherRestClient = openWeatherRestClient;
+    this.REFRESH_INTERVAL = Objects.nonNull(refreshInterval) ? Long.parseLong(refreshInterval) : 2l;
     log.info("Refresh interval Value :=> {}", refreshInterval);
     this.caffeineCache = Caffeine.newBuilder()
         .expireAfterWrite(REFRESH_INTERVAL, TimeUnit.MINUTES)
@@ -53,7 +53,7 @@ public class WeatherDetailsServiceImpl implements WeatherDetailsService {
   @Override
   public Mono<WeatherDetails> findByCityNameAndCountry(String cityName, String country) {
     return weatherDetailsReactiveRepository.findByCityNameAndCityCountry(cityName, country)
-        .switchIfEmpty(Mono.empty())
+        .switchIfEmpty(Mono.defer(() -> Mono.empty()))
         .log();
   }
 
@@ -90,7 +90,7 @@ public class WeatherDetailsServiceImpl implements WeatherDetailsService {
           //weatherDetailsReactiveRepository.deleteById(weatherDetails.getWeatherId()).subscribe();
           return this.save(weatherDetails);
         })
-        .switchIfEmpty(Mono.empty());
+        .switchIfEmpty(Mono.defer(() -> Mono.empty()));
   }
 
   @Override

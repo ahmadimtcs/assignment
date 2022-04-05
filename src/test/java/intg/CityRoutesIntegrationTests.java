@@ -32,21 +32,21 @@ import reactor.core.publisher.Flux;
 public class CityRoutesIntegrationTests {
 
   @Autowired
-  WebTestClient webTestClient;
+  private WebTestClient webTestClient;
 
   @Autowired
-  CityReactiveRepository cityReactiveRepository;
+  private CityReactiveRepository cityReactiveRepository;
 
   @Autowired
-  UserCityDetailsReactiveRepository userCityDetailsReactiveRepository;
+  private UserCityDetailsReactiveRepository userCityDetailsReactiveRepository;
 
   @Autowired
-  CityService cityService;
+  private CityService cityService;
 
   @MockBean
-  WebClient webClient;
+  private WebClient webClient;
 
-  static String USER_CITY_URL = "/v1/userCities";
+  private static String USER_CITY_URL = "/v1/userCities";
 
   @BeforeEach
   void setup() {

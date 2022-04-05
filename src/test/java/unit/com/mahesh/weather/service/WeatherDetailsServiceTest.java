@@ -24,17 +24,18 @@ import uk.co.jemos.podam.api.PodamFactoryImpl;
 @WebFluxTest
 class WeatherDetailsServiceTest {
 
-  PodamFactory factory = new PodamFactoryImpl();
-  WeatherDetails weatherDetails;
+  private PodamFactory factory = new PodamFactoryImpl();
+  private WeatherDetails weatherDetails;
+
+  @Mock
+  private WeatherDetailsReactiveRepository weatherDetailsReactiveRepository;
+
+  @Mock
+  private OpenWeatherRestClient openWeatherRestClient;
 
   @InjectMocks
-  WeatherDetailsServiceImpl weatherDetailsService = new WeatherDetailsServiceImpl("3");
-
-  @Mock
-  WeatherDetailsReactiveRepository weatherDetailsReactiveRepository;
-
-  @Mock
-  OpenWeatherRestClient openWeatherRestClient;
+  private WeatherDetailsServiceImpl weatherDetailsService = new WeatherDetailsServiceImpl(
+      weatherDetailsReactiveRepository, openWeatherRestClient, "3");
 
   @BeforeEach
   void setUp() {

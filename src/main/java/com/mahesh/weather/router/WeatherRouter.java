@@ -18,7 +18,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springdoc.core.annotations.RouterOperations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,12 +29,14 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 @Slf4j
 public class WeatherRouter {
 
-  @Autowired
-  UserCityHandler userCityHandler;
+  private UserCityHandler userCityHandler;
 
-  @Autowired
-  WeatherHandler weatherHandler;
+  private WeatherHandler weatherHandler;
 
+  WeatherRouter(UserCityHandler userCityHandler, WeatherHandler weatherHandler) {
+    this.userCityHandler = userCityHandler;
+    this.weatherHandler = weatherHandler;
+  }
 
   @RouterOperations(value = {
       @RouterOperation(path = "/v1/city", operation = @Operation(operationId = "findCity", requestBody = @RequestBody(required = true, content = @Content(schema = @Schema(implementation = City.class))),
@@ -48,6 +49,10 @@ public class WeatherRouter {
           requestBody = @RequestBody(required = true, content = @Content(array = @ArraySchema(schema = @Schema(implementation = City.class)))),
           responses = @ApiResponse(content = @Content(schema = @Schema(implementation = UserCityDetails.class)))),
           method = RequestMethod.POST, beanClass = UserCityHandler.class, beanMethod = "addUserCities"),
+      @RouterOperation(path = "/v1/userCities/flux", operation = @Operation(operationId = "addUserCitiesFlux",
+          requestBody = @RequestBody(required = true, content = @Content(array = @ArraySchema(schema = @Schema(implementation = City.class)))),
+          responses = @ApiResponse(content = @Content(array = @ArraySchema(schema = @Schema(implementation = City.class))))),
+          method = RequestMethod.POST, beanClass = UserCityHandler.class, beanMethod = "addUserCitiesFlux"),
       @RouterOperation(path = "/v1/userCities", operation = @Operation(operationId = "updateUserCities",
           requestBody = @RequestBody(required = true, content = @Content(array = @ArraySchema(schema = @Schema(implementation = City.class)))),
           responses = @ApiResponse(content = @Content(schema = @Schema(implementation = UserCityDetails.class)))),
@@ -77,6 +82,7 @@ public class WeatherRouter {
         .POST("/v1/city", request -> userCityHandler.findCity(request))
         .nest(path("/v1/userCities"), builder -> builder
             .POST("", request -> userCityHandler.addUserCities(request))
+            .POST("/flux", request -> userCityHandler.addUserCitiesFlux(request))
             .PUT("", request -> userCityHandler.updateUserCities(request))
             .DELETE("", request -> userCityHandler.deleteUserCities())
             .GET("", request -> userCityHandler.findAllUserCities(request))

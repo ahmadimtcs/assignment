@@ -11,6 +11,5 @@ public interface WeatherDetailsReactiveRepository extends
 
   Mono<WeatherDetails> findByCityNameAndCityCountry(String cityName, String country);
 
-
   Mono<WeatherDetails> findByCoordinateLatAndCoordinateLon(String lat, String lon);
 }

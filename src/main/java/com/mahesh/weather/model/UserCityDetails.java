@@ -45,4 +45,8 @@ public class UserCityDetails {
     this.userId = userId;
     this.cities = cities;
   }
+
+  public void addCity(City city) {
+    this.cities.add(city);
+  }
 }
