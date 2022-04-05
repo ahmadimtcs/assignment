@@ -1,0 +1,27 @@
+spring:
+  profiles:
+    active: local
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: weather
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  mongodb:
+    embedded:
+      version: 3.4.3
+---
+key:
+  geolocation-url: http://api.openweathermap.org/geo/1.0/direct
+  openweather-url: https://api.openweathermap.org/data/2.5/weather
+  api-key: dda73599562795daa3acfe9e9577c035
+  refresh-interval: 5
